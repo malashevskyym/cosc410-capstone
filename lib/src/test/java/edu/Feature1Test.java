@@ -33,4 +33,5 @@ public class Feature1Test {
     }
     assertEquals(1, ln);
   }
+  // Nothing, one, isString
 }
