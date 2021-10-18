@@ -11,16 +11,36 @@ public class testyTest {
   @Test
   public void testF1NoArguments() {
     // Simulating passing arguments into main
-
     lineParser test = new lineParser(new String[] {});
+    int ln;
+    if (test.returnHashtable().isEmpty()) {
+      ln = 0;
+    } else {
+      ln = test.returnHashtable().size();
+    }
+    assertEquals(0, ln);
   }
 
   @Test
   public void testF1IsNotEmpty() {
     // Simulating passing arguments into main
     lineParser test = new lineParser(new String[] {"testing"});
+    int ln;
+    if (test.returnHashtable().isEmpty()) {
+      ln = 0;
+    } else {
+      ln = test.returnHashtable().size();
+    }
+    assertEquals(1, ln);
   }
   // Nothing, one, isString
+
+  @Test
+  public void testF1GetValuesFromIdentifiers() {
+    lineParser test = new lineParser(new String[] {"testing"});
+    String value = test.GetValuesFromIdentifier("0");
+    assertEquals("Testing", value);
+  }
 
   @Test
   public void testF2HasDashHelp() {

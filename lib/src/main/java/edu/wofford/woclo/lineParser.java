@@ -12,7 +12,31 @@ public class lineParser {
     System.out.println(returnDescription());
   }
 
-  public lineParser() {}
+  /**
+   * Constructor lineParser
+   *
+   * <p>Creates an instance of the mainArgs Hashtable that contains a key and the arguments passed
+   * in the command line.
+   */
+  public lineParser() {
+    for (int i = 0; i < args.length; i++) {
+      String iString = String.valueOf(i);
+      mainArgs.put(iString, args[i]);
+    }
+  };
+
+  public Hashtable<String, String> returnHashtable() {
+    return mainArgs;
+  }
+
+  /**
+   * Returns Value using the Identifier(key)
+   *
+   * @param identifier Identifier in the Hashtable
+   */
+  public String GetValuesFromIdentifier(String identifier) {
+    return mainArgs.get(identifier);
+  }
 
   public void setArgs(String[] args) {
     this.args = args;
