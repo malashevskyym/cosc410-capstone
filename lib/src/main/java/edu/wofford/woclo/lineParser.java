@@ -10,8 +10,9 @@ public class lineParser {
   /**
    * Constructor lineParser
    *
-   * <p>Creates an instance of the mainArgs Hashtable that contains a key and the arguments passed
-   * in the command line.
+   * <p>
+   * Creates an instance of the mainArgs Hashtable that contains a key and the
+   * arguments passed in the command line.
    */
   public lineParser(int numArgs, String[] args) {
     if (detectHelp()) {
