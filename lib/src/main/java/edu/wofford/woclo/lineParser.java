@@ -4,13 +4,8 @@ import java.util.*;
 
 public class lineParser {
   static String[] args = new String[] {};
-  Hashtable<String, String> mainArgs = new Hashtable<String, String>();
-  Hashtable<String, String> argsDescriptive = new Hashtable<String, String>();
-
-  public lineParser(String[] args) {
-    this.args = args;
-    System.out.println(returnDescription());
-  }
+  int numArgs = 0;
+  String helpInfo = "";
 
   /**
    * Constructor lineParser
@@ -18,24 +13,48 @@ public class lineParser {
    * <p>Creates an instance of the mainArgs Hashtable that contains a key and the arguments passed
    * in the command line.
    */
-  public lineParser() {
-    for (int i = 0; i < args.length; i++) {
-      String iString = String.valueOf(i);
-      mainArgs.put(iString, args[i]);
+  public lineParser(int numArgs, String[] args) {
+    if (detectHelp()) {
+      System.out.println(helpInfo);
+      System.exit(1);
     }
-  };
+    args = new String[numArgs];
+    if (numArgs > args.length) {
+      // Throw exception
 
-  public Hashtable<String, String> returnHashtable() {
-    return mainArgs;
+      throw new IllegalArgumentException("Too many arguments");
+
+    } else if (numArgs < args.length) {
+      // Throw exception
+      throw new IllegalArgumentException("Too few arguments");
+    }
+
+    this.args = args;
+    this.numArgs = numArgs;
   }
 
-  /**
-   * Returns Value using the Identifier(key)
-   *
-   * @param identifier Identifier in the Hashtable
-   */
-  public String GetValuesFromIdentifier(String identifier) {
-    return mainArgs.get(identifier);
+  public lineParser(int numArgs, String[] args, String helpInfo) {
+    if (detectHelp()) {
+      System.out.println(helpInfo);
+      System.exit(1);
+    }
+    args = new String[numArgs];
+    if (numArgs > args.length) {
+      // Throw exception
+
+      throw new IllegalArgumentException("Too many arguments");
+
+    } else if (numArgs < args.length) {
+      // Throw exception
+      throw new IllegalArgumentException("Too few arguments");
+    }
+    this.helpInfo = helpInfo;
+    this.args = args;
+    this.numArgs = numArgs;
+  }
+
+  public String[] getArgs() {
+    return this.args;
   }
 
   public void setArgs(String[] args) {
@@ -47,53 +66,12 @@ public class lineParser {
    *
    * @return Returns boolean true if args does contain --help or -h.
    */
-  public static boolean detectHelp() {
+  private static boolean detectHelp() {
     for (int i = 0; i < args.length; i++) {
       if (args[i].equals("--help") || args[i].equals("-h")) {
         return true;
       }
     }
     return false;
-  }
-
-  /**
-   * Adds descriptive information to an argument via a hash table. Argment in string form will be
-   * key and description will be value.
-   *
-   * @param argument Argument which user wants to add description to
-   * @param description Additional desriptive information
-   */
-  protected void addDescription(String argument, String description) {
-    if (argsDescriptive.contains(argument)) {
-      argsDescriptive.replace(argument, description);
-    } else {
-      argsDescriptive.put(argument, description);
-    }
-  }
-
-  /**
-   * Returns descriptive information of the first argument that display additional information.
-   *
-   * @return A string with descriptive information of the first argument preceeeding a --help or
-   *     --h.
-   */
-  protected String returnDescription() {
-    if (detectHelp()) {
-      // Whatever is before detect help should be selected, then its value called from
-      // the description table
-      int k = 0;
-      // Finding position of argument before help
-      for (int i = 0; i < args.length; i++) {
-        if (args[i].equals("--help") || args[i].equals("-h")) {
-          k = i;
-          break;
-        }
-      }
-      String s = (k - 1) + "";
-      s = mainArgs.get(s);
-      s = argsDescriptive.get(s);
-      return s;
-    }
-    return "";
   }
 }
