@@ -7,24 +7,22 @@ public class lineParser {
   Hashtable<String, String> mainArgs = new Hashtable<String, String>();
   Hashtable<String, String> argsDescriptive = new Hashtable<String, String>();
 
-  public lineParser(String[] args) {
-    this.args = args;
-    System.out.println(returnDescription());
-  }
-
   /**
    * Constructor lineParser
    *
    * <p>Creates an instance of the mainArgs Hashtable that contains a key and the arguments passed
    * in the command line.
    */
-  public lineParser() {
+
+  public lineParser(String[] args) {
+    this.args = args;
     for (int i = 0; i < args.length; i++) {
       String iString = String.valueOf(i);
       mainArgs.put(iString, args[i]);
     }
   };
 
+  /** Returns Hashtable mainArgs */
   public Hashtable<String, String> returnHashtable() {
     return mainArgs;
   }

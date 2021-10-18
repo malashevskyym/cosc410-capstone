@@ -37,7 +37,7 @@ public class testyTest {
 
   @Test
   public void testF1GetValuesFromIdentifiers() {
-    lineParser test = new lineParser(new String[] {"testing"});
+    lineParser test = new lineParser(new String[] {"Testing"});
     String value = test.GetValuesFromIdentifier("0");
     assertEquals("Testing", value);
   }
