@@ -1,7 +1,5 @@
 package edu.wofford.woclo;
 
-import java.util.*;
-
 public class lineParser {
   static String[] args = new String[] {};
   int numArgs = 0;
