@@ -1,7 +1,6 @@
 package demos;
 
 import edu.wofford.woclo.*;
-import java.util.Scanner;
 
 public class EquivalentStrings {
 
