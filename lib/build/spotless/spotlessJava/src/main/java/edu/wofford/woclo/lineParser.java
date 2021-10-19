@@ -1,9 +1,8 @@
 package edu.wofford.woclo;
 
-public class lineParser {
-  static String[] args = new String[] {};
-  int numArgs = 0;
-  String helpInfo = "";
+public class LineParser {
+  private String[] args = new String[] {};
+  private String helpInfo = "";
 
   /**
    * Constructor lineParser
@@ -14,9 +13,11 @@ public class lineParser {
    * @param numArgs is the number of arguments being passed in the command lin.
    * @param args are the arguments that are being passed in the command line.
    */
-  public lineParser(int numArgs, String[] args) {
+  public LineParser(int numArgs, String[] args) {
     if (detectHelp()) {
       System.out.println(helpInfo);
+      // Need to create new exception
+      throw new HelpException(helpInfo);
     }
 
     if (numArgs > args.length) {
@@ -28,9 +29,8 @@ public class lineParser {
       // Throw exception
       throw new IllegalArgumentException("Too few arguments");
     }
-
-    this.args = args;
-    this.numArgs = numArgs;
+    // Deep copy
+    this.args = args.clone();
   }
 
   /**
@@ -41,13 +41,14 @@ public class lineParser {
    *
    * @param numArgs is the number of arguments being passed in the command line.
    * @param args is the array of arguments that are being passed in the command line.
-   * @param helpInfo serves as an optional argument that stores a string of help info.
+   * @param helpInf serves as an optional argument that stores a string of help info.
    */
-  public lineParser(int numArgs, String[] args, String helpInfo) {
+  public LineParser(int numArgs, String[] args, String helpInfo) {
+
     if (detectHelp()) {
       System.out.println(helpInfo);
+      throw new HelpException(helpInfo);
     }
-    args = new String[numArgs];
     if (numArgs > args.length) {
       // Throw exception
 
@@ -58,8 +59,7 @@ public class lineParser {
       throw new IllegalArgumentException("Too few arguments");
     }
     this.helpInfo = helpInfo;
-    this.args = args;
-    this.numArgs = numArgs;
+    this.args = args.clone();
   }
 
   /**
@@ -68,7 +68,9 @@ public class lineParser {
    * @return Returns args array that is available in the lineParser class.
    */
   public String[] getArgs() {
-    return this.args;
+    // Make a deep copy here
+    String[] copy = args.clone();
+    return copy;
   }
 
   /**
@@ -77,7 +79,8 @@ public class lineParser {
    * @param args String array representing the command line arguments.
    */
   public void setArgs(String[] args) {
-    this.args = args;
+    // Deep copy here
+    this.args = args.clone();
   }
 
   /**
@@ -85,7 +88,7 @@ public class lineParser {
    *
    * @return Returns boolean true if args does contain --help or -h.
    */
-  public static boolean detectHelp() {
+  public boolean detectHelp() {
     for (int i = 0; i < args.length; i++) {
       if (args[i].equals("--help") || args[i].equals("-h")) {
         return true;
