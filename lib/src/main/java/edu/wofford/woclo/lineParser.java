@@ -8,9 +8,10 @@ public class lineParser {
   /**
    * Constructor lineParser
    *
-   * <p>
-   * Creates an instance of the mainArgs Hashtable that contains a key and the
-   * arguments passed in the command line.
+   * <p>Creates an instance of the mainArgs Hashtable that contains a key and the arguments passed
+   * in the command line.
+   * @param numArgs is the number of arguments being passed in the command lin.
+   * @param args are the arguments that are being passed in the command line.
    */
   public lineParser(int numArgs, String[] args) {
     if (detectHelp()) {
@@ -32,6 +33,15 @@ public class lineParser {
     this.numArgs = numArgs;
   }
 
+/**
+   * Constructor lineParser.
+   *
+   * <p>Creates an instance of the mainArgs Hashtable that contains a key and the arguments passed
+   * in the command line.
+   * @param numArgs is the number of arguments being passed in the command line.
+   * @param args is the array of arguments that are being passed in the command line.
+   * @param helpInfo serves as an optional argument that stores a string of help info.
+   */
   public lineParser(int numArgs, String[] args, String helpInfo) {
     if (detectHelp()) {
       System.out.println(helpInfo);
@@ -52,10 +62,20 @@ public class lineParser {
     this.numArgs = numArgs;
   }
 
+  /**
+   * Returns args array from lineParser class.
+   *
+   * @return Returns args array that is available in the lineParser class.
+   */
   public String[] getArgs() {
     return this.args;
   }
 
+/**
+   * sets args array in the lineParse class to the args array being passed.
+   *
+   * @param args String array representing the command line arguments.
+   */
   public void setArgs(String[] args) {
     this.args = args;
   }
