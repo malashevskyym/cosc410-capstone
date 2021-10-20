@@ -14,6 +14,10 @@ public class LineParser {
    * @param args are the arguments that are being passed in the command line.
    */
   public LineParser(int numArgs, String[] args) {
+    if (detectHelp(args)) {
+
+      throw new HelpException(helpInfo);
+    }
 
     if (numArgs > args.length) {
       // Throw exception
