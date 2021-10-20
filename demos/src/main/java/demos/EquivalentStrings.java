@@ -2,7 +2,6 @@ package demos;
 
 import edu.wofford.woclo.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 public class EquivalentStrings {
@@ -14,8 +13,8 @@ public class EquivalentStrings {
   public static void main(String... args) {
     int length = args.length;
     LineParser lineParser = new LineParser(length, args);
-    String firstString = args[0];
-    String secondString = args[1];
+    String firstString = lineParser.getArgs(0);
+    String secondString = lineParser.getArgs(1);
     EquivalentStrings equivalentStrings = new EquivalentStrings(firstString, secondString);
     equivalentStrings.isEquivalent();
   }
@@ -36,14 +35,6 @@ public class EquivalentStrings {
       return true;
     }
     return false;
-  }
-
-  protected void convertStringToExpression(String string, HashSet<String> stringOfUniqueChars) {
-    int expr = 0;
-    for (String character : stringOfUniqueChars) {
-      string.replace(character, String.valueOf(expr));
-      expr++;
-    }
   }
 
   protected String convertStringToExpression(
