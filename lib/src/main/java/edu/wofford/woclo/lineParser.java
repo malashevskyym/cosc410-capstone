@@ -7,15 +7,15 @@ public class LineParser {
   /**
    * Constructor lineParser
    *
-   * <p>Creates an instance of the mainArgs Hashtable that contains a key and the arguments passed
-   * in the command line.
+   * <p>
+   * Creates an instance of the mainArgs Hashtable that contains a key and the
+   * arguments passed in the command line.
    *
    * @param numArgs is the number of arguments being passed in the command lin.
-   * @param args are the arguments that are being passed in the command line.
+   * @param args    are the arguments that are being passed in the command line.
    */
   public LineParser(int numArgs, String[] args) {
     if (detectHelp()) {
-      System.out.println(helpInfo);
       // Need to create new exception
       throw new HelpException(helpInfo);
     }
@@ -36,17 +36,20 @@ public class LineParser {
   /**
    * Constructor lineParser.
    *
-   * <p>Creates an instance of the mainArgs Hashtable that contains a key and the arguments passed
-   * in the command line.
+   * <p>
+   * Creates an instance of the mainArgs Hashtable that contains a key and the
+   * arguments passed in the command line.
    *
    * @param numArgs is the number of arguments being passed in the command line.
-   * @param args is the array of arguments that are being passed in the command line.
-   * @param helpInf serves as an optional argument that stores a string of help info.
+   * @param args    is the array of arguments that are being passed in the command
+   *                line.
+   * @param helpInf serves as an optional argument that stores a string of help
+   *                info.
    */
   public LineParser(int numArgs, String[] args, String helpInfo) {
 
     if (detectHelp()) {
-      System.out.println(helpInfo);
+
       throw new HelpException(helpInfo);
     }
     if (numArgs > args.length) {
@@ -60,6 +63,19 @@ public class LineParser {
     }
     this.helpInfo = helpInfo;
     this.args = args.clone();
+  }
+
+  public int getPosition(String argument) {
+    for (int i = 0; i < args.length; i++) {
+      if (args[i].equals(argument)) {
+        return i;
+      }
+    }
+    throw new IllegalArgumentException();
+  }
+
+  public String getArgs(int position) {
+    return args[position];
   }
 
   /**

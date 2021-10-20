@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="edu.wofford.woclo.TestyTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2021-10-19T22:56:07" hostname="DESKTOP-VF6F7ON" time="0.168">
+  <properties/>
+  <testcase name="testLineParserLessArgsThanLength()" classname="edu.wofford.woclo.TestyTest" time="0.114"/>
+  <testcase name="testLineParserConstructorNoArguments()" classname="edu.wofford.woclo.TestyTest" time="0.007"/>
+  <testcase name="testLineParserMoreArgsThanLength()" classname="edu.wofford.woclo.TestyTest" time="0.003"/>
+  <testcase name="testLineParserNotEmpty()" classname="edu.wofford.woclo.TestyTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
