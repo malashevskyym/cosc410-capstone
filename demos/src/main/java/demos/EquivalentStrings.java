@@ -11,7 +11,10 @@ public class EquivalentStrings {
   protected ArrayList<String> string2ListChars = new ArrayList<String>();
 
   public static void main(String... args) {
-    LineParser lineParser = new LineParser(args.length, args);
+    int length = args.length;
+    String helpMessage =
+        "usage: java EquivalentStrings [-h] string1 string2\n\nDetermine if two strings are equivalent.\n\npositional arguments:\n string1     (string)      the first string\n string2     (string)      the second string\n\nnamed arguments:\n -h, --help  show this help message and exit";
+    LineParser lineParser = new LineParser(length, args, helpMessage);
     String[] stringArgs = lineParser.getArgs();
     if (stringArgs.length == 0) {
       String message = "EquivalentStrings error: the argument string1 is required";

@@ -7,16 +7,18 @@ public class LineParser {
   /**
    * Constructor lineParser
    *
-   * <p>Creates an instance of the mainArgs Hashtable that contains a key and the arguments passed
-   * in the command line.
+   * <p>Creates an instance of the mainArgs String Array that contains a key and the arguments
+   * passed in the command line.
    *
    * @param numArgs is the number of arguments being passed in the command lin.
    * @param args are the arguments that are being passed in the command line.
    */
   public LineParser(int numArgs, String[] args) {
-    if (detectHelp()) {
-      // Need to create new exception
-      throw new HelpException(helpInfo);
+    if (detectHelp(args)) {
+      System.out.println(helpInfo);
+      // Thread.setDefaultUncaughtExceptionHandler((t, e) ->
+      // System.err.println(e.getMessage()));
+      // throw new HelpException(helpInfo);
     }
 
     if (numArgs > args.length) {
@@ -28,6 +30,7 @@ public class LineParser {
       // Throw exception
       throw new IllegalArgumentException("Too few arguments");
     }
+
     // Deep copy
     this.args = args.clone();
   }
@@ -40,14 +43,16 @@ public class LineParser {
    *
    * @param numArgs is the number of arguments being passed in the command line.
    * @param args is the array of arguments that are being passed in the command line.
-   * @param helpInf serves as an optional argument that stores a string of help info.
+   * @param helpInfo serves as an optional argument that stores a string of help info.
    */
   public LineParser(int numArgs, String[] args, String helpInfo) {
-
-    if (detectHelp()) {
-
-      throw new HelpException(helpInfo);
+    if (detectHelp(args)) {
+      System.out.println(helpInfo);
+      // Thread.setDefaultUncaughtExceptionHandler((t, e) ->
+      // System.err.println(e.getMessage()));
+      // throw new HelpException(helpInfo);
     }
+
     if (numArgs > args.length) {
       // Throw exception
 
@@ -61,6 +66,10 @@ public class LineParser {
     this.args = args.clone();
   }
 
+  /**
+   * @param argument String of argument we want the position of.
+   * @return Integer representing argument position.
+   */
   public int getPosition(String argument) {
     for (int i = 0; i < args.length; i++) {
       if (args[i].equals(argument)) {
@@ -70,8 +79,17 @@ public class LineParser {
     throw new IllegalArgumentException();
   }
 
-  public String getArgs(int position) {
+  /**
+   * @param position Position of argument.
+   * @return Returns argument in args array.
+   */
+  public String getArgsArray(int position) {
     return args[position];
+  }
+
+  /** @return Returns help info debug. */
+  public String getHelpMessage() {
+    return helpInfo;
   }
 
   /**
@@ -98,9 +116,10 @@ public class LineParser {
   /**
    * Detects if the argmuments in command line contain a --help or -h.
    *
+   * @param args String array we are checking help is within.
    * @return Returns boolean true if args does contain --help or -h.
    */
-  public boolean detectHelp() {
+  private boolean detectHelp(String[] args) {
     for (int i = 0; i < args.length; i++) {
       if (args[i].equals("--help") || args[i].equals("-h")) {
         return true;
