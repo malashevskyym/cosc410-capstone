@@ -13,10 +13,18 @@ public class EquivalentStrings {
   public static void main(String... args) {
     int length = args.length;
     LineParser lineParser = new LineParser(length, args);
-    String firstString = lineParser.getArgs(0);
-    String secondString = lineParser.getArgs(1);
-    EquivalentStrings equivalentStrings = new EquivalentStrings(firstString, secondString);
-    equivalentStrings.isEquivalent();
+    String[] stringArgs = lineParser.getArgs();
+    if (stringArgs.length == 0) {
+      System.out.print("EquivalentStrings error: the argument string1 is required");
+    } else if (stringArgs.length == 1) {
+      System.out.print("EquivalentStrings error: the argument string2 is required");
+    } else if (stringArgs.length > 2) {
+      System.out.print(
+          "EquivalentStrings error: the value " + stringArgs[2] + " matches no argument");
+    } else {
+      EquivalentStrings equivalentStrings = new EquivalentStrings(stringArgs[0], stringArgs[1]);
+      equivalentStrings.isEquivalent();
+    }
   }
 
   public EquivalentStrings(String string1, String string2) {
