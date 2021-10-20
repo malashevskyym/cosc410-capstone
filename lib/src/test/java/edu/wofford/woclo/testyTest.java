@@ -38,4 +38,22 @@ public class TestyTest {
           new LineParser(2, new String[] {"Testing1", "Testing2", "Testing3"});
         });
   }
+
+  @Test
+  public void testLineParserH() {
+    Assertions.assertThrows(
+        HelpException.class,
+        () -> {
+          new LineParser(3, new String[] {"Testing1", "Testing2", "--help"}, "test");
+        });
+  }
+
+  @Test
+  public void testLineParserHelp() {
+    Assertions.assertThrows(
+        HelpException.class,
+        () -> {
+          new LineParser(3, new String[] {"Testing1", "-h", "Testing3"}, "test");
+        });
+  }
 }
