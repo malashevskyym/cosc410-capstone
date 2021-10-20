@@ -20,6 +20,13 @@ public class TestyTest {
     assertEquals(2, testLen);
   }
 
+  @Test
+  public void testLineParserGetHelp() {
+    LineParser test =
+        new LineParser(2, new String[] {"Testing1", "Testing2"}, "this is a help message");
+    assertEquals(test.getHelpMessage(), "this is a help message");
+  }
+
   // These don't quite work yet
   @Test
   public void testLineParserLessArgsThanLength() {
@@ -27,6 +34,24 @@ public class TestyTest {
         IllegalArgumentException.class,
         () -> {
           new LineParser(3, new String[] {"Testing1", "Testing2"});
+        });
+  }
+
+  @Test
+  public void testLineParserLessArgsThanLengthWithH() {
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          new LineParser(3, new String[] {"Testing1", "Testing2"}, "help");
+        });
+  }
+
+  @Test
+  public void testLineParserMoreArgsThanLengthWithH() {
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          new LineParser(1, new String[] {"Testing1", "Testing2"}, "help");
         });
   }
 
@@ -40,20 +65,62 @@ public class TestyTest {
   }
 
   @Test
-  public void testLineParserH() {
-    Assertions.assertThrows(
-        HelpException.class,
-        () -> {
-          new LineParser(3, new String[] {"Testing1", "Testing2", "--help"}, "test");
-        });
+  public void testSetArgsWithHelp() {
+    LineParser test =
+        new LineParser(3, new String[] {"Testing1", "Testing2", "--help"}, "Help Info");
+
+    assertEquals(test.getHelpMessage(), "Help Info");
   }
 
   @Test
-  public void testLineParserHelp() {
+  public void testSetArgsWithHelpWithoutHelpMessage() {
+    LineParser test = new LineParser(3, new String[] {"Testing1", "Testing2", "-h"});
+
+    assertEquals(test.getHelpMessage(), "");
+  }
+
+  @Test
+  public void testSetArgs() {
+    LineParser test = new LineParser(2, new String[] {"Testing1", "Testing2"});
+    test.setArgs(new String[] {"Testing3", "Testing4"});
+    assertEquals(test.getArgs()[0], "Testing3");
+  }
+
+  @Test
+  public void testSetArgs2() {
+    LineParser test = new LineParser(2, new String[] {"Testing1", "Testing2"});
+    test.setArgs(new String[] {"Testing3", "Testing4"});
+    assertEquals(test.getArgs()[1], "Testing4");
+  }
+
+  @Test
+  public void testGetArgsArray() {
+    LineParser test = new LineParser(2, new String[] {"Testing1", "Testing2"});
+    String tester = test.getArgsArray(0);
+    assertEquals(tester, "Testing1");
+  }
+
+  @Test
+  public void testGetArgsArray2() {
+    LineParser test = new LineParser(2, new String[] {"Testing1", "Testing2"});
+    String tester = test.getArgsArray(1);
+    assertEquals(tester, "Testing2");
+  }
+
+  @Test
+  public void testGetPosition() {
+    LineParser test = new LineParser(2, new String[] {"Testing1", "Testing2"});
+    Integer tester = test.getPosition("Testing1");
+    assertEquals(tester, 0);
+  }
+
+  @Test
+  public void testGetPosition2() {
+    LineParser test = new LineParser(2, new String[] {"Testing1", "Testing2"});
     Assertions.assertThrows(
-        HelpException.class,
+        IllegalArgumentException.class,
         () -> {
-          new LineParser(3, new String[] {"Testing1", "-h", "Testing3"}, "test");
+          test.getPosition("xyz");
         });
   }
 }
