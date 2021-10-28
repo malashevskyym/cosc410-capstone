@@ -1,0 +1,8 @@
+-classpath 'C:\\Work\\Coding\\CS 410\\project-fall-2021-shannon\\lib\\build\\classes\\java\\main;C:\\Work\\Coding\\CS 410\\project-fall-2021-shannon\\lib\\build\\resources\\main'
+-d 'C:\\Work\\Coding\\CS 410\\project-fall-2021-shannon\\lib\\build\\docs\\javadoc'
+-doctitle 'lib 1.0 API'
+-link 'https://docs.oracle.com/javase/8/docs/api/'
+-notimestamp 
+-quiet 
+-windowtitle 'lib 1.0 API'
+'C:\\Work\\Coding\\CS 410\\project-fall-2021-shannon\\lib\\src\\main\\java\\edu\\wofford\\woclo\\LineParser.java'

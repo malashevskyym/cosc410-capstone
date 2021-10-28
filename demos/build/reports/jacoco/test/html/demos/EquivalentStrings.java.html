@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EquivalentStrings.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">demos</a> &gt; <a href="index.source.html" class="el_package">demos</a> &gt; <span class="el_source">EquivalentStrings.java</span></div><h1>EquivalentStrings.java</h1><pre class="source lang-java linenums">package demos;
+
+import edu.wofford.woclo.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+
+public class EquivalentStrings {
+  protected String string1;
+<span class="fc" id="L9">  protected ArrayList&lt;String&gt; string1ListChars = new ArrayList&lt;String&gt;();</span>
+  protected String string2;
+<span class="fc" id="L11">  protected ArrayList&lt;String&gt; string2ListChars = new ArrayList&lt;String&gt;();</span>
+
+  public static void main(String... args) {
+<span class="fc" id="L14">    int length = args.length;</span>
+<span class="fc" id="L15">    String helpMessage =</span>
+        &quot;usage: java EquivalentStrings [-h] string1 string2\n\nDetermine if two strings are equivalent.\n\npositional arguments:\n string1     (string)      the first string\n string2     (string)      the second string\n\nnamed arguments:\n -h, --help  show this help message and exit&quot;;
+<span class="fc" id="L17">    LineParser lineParser = new LineParser(length, args, helpMessage);</span>
+<span class="fc" id="L18">    String[] stringArgs = lineParser.getArgs();</span>
+<span class="fc bfc" id="L19" title="All 2 branches covered.">    if (stringArgs.length == 0) {</span>
+<span class="fc" id="L20">      String message = &quot;EquivalentStrings error: the argument string1 is required&quot;;</span>
+<span class="fc" id="L21">      System.out.print(message);</span>
+<span class="fc bfc" id="L22" title="All 2 branches covered.">    } else if (stringArgs.length == 1) {</span>
+<span class="fc" id="L23">      String message = &quot;EquivalentStrings error: the argument string2 is required&quot;;</span>
+<span class="fc" id="L24">      System.out.print(message);</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">    } else if (stringArgs.length &gt; 2) {</span>
+<span class="fc" id="L26">      String message =</span>
+          &quot;EquivalentStrings error: the value &quot; + stringArgs[2] + &quot; matches no argument&quot;;
+<span class="fc" id="L28">      System.out.print(message);</span>
+<span class="fc" id="L29">    } else {</span>
+<span class="fc" id="L30">      EquivalentStrings obj = new EquivalentStrings(stringArgs[0], stringArgs[1]);</span>
+<span class="fc" id="L31">      obj.isEquivalent();</span>
+    }
+<span class="fc" id="L33">  }</span>
+
+<span class="fc" id="L35">  public EquivalentStrings(String string1, String string2) {</span>
+<span class="fc" id="L36">    this.string1 = string1;</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">    for (int i = 0; i &lt; string1.length(); i++) {</span>
+<span class="fc" id="L38">      string1ListChars.add(Character.toString(string1.charAt(i)));</span>
+    }
+<span class="fc" id="L40">    this.string2 = string2;</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">    for (int i = 0; i &lt; string2.length(); i++) {</span>
+<span class="fc" id="L42">      string2ListChars.add(Character.toString(string2.charAt(i)));</span>
+    }
+<span class="fc" id="L44">  }</span>
+
+  protected boolean checkSameLength() {
+<span class="fc bfc" id="L47" title="All 2 branches covered.">    if (string1.length() == string2.length()) {</span>
+<span class="fc" id="L48">      return true;</span>
+    }
+<span class="fc" id="L50">    return false;</span>
+  }
+
+  protected String convertStringToExpression(
+      String string, LinkedHashSet&lt;String&gt; stringOfUniqueChars) {
+<span class="fc" id="L55">    int expr = 0;</span>
+<span class="fc" id="L56">    String convertedString = string;</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">    for (String character : stringOfUniqueChars) {</span>
+<span class="fc" id="L58">      convertedString = convertedString.replace(character, String.valueOf(expr));</span>
+<span class="fc" id="L59">      expr++;</span>
+<span class="fc" id="L60">    }</span>
+<span class="fc" id="L61">    return convertedString;</span>
+  }
+
+  protected void isEquivalent() {
+<span class="fc" id="L65">    LinkedHashSet&lt;String&gt; string1UniqueChars = new LinkedHashSet&lt;String&gt;(string1ListChars);</span>
+<span class="fc" id="L66">    String convertedString1 = convertStringToExpression(string1, string1UniqueChars);</span>
+<span class="fc" id="L67">    LinkedHashSet&lt;String&gt; string2UniqueChars = new LinkedHashSet&lt;String&gt;(string2ListChars);</span>
+<span class="fc" id="L68">    String convertedString2 = convertStringToExpression(string2, string2UniqueChars);</span>
+
+<span class="fc bfc" id="L70" title="All 4 branches covered.">    if (checkSameLength() &amp;&amp; convertedString1.equals(convertedString2)) {</span>
+<span class="fc" id="L71">      System.out.print(&quot;equivalent&quot;);</span>
+    } else {
+<span class="fc" id="L73">      System.out.print(&quot;not equivalent&quot;);</span>
+    }
+<span class="fc" id="L75">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
