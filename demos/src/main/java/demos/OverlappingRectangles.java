@@ -8,13 +8,17 @@ import edu.wofford.woclo.*;
 // need to heck if there is indeed an overlap.
 
 public class OverlappingRectangles {
+  int totalArea = 0;
+  int overlapArea = 0;
 
   public static void main(String... args) {
     // LineParser arguments = new LineParser(8, "Integer", args);
     // Integer[] coordinates = arguments.getArgs();
 
-    Integer[] test = {-4, -2, 3, 2, -1, -3, 5, 3};
-    OverlappingRectangles Obj = new OverlappingRectangles(test);
+    LineParser arguments = new LineParser(8, args);
+
+    // OverlappingRectangles Rectangles = new OverlappingRectangles();
+    // System.out.println(Rectangles.overlapArea + " " + Rectangles.totalArea);
   }
 
   public OverlappingRectangles(Integer[] coord) {
@@ -29,12 +33,8 @@ public class OverlappingRectangles {
     int x4 = coord[6];
     int y4 = coord[7];
 
-    int totalArea = 0;
-    int overlapArea = 0;
-
     overlapArea = getOverlap(x1, y1, x2, y2, x3, y3, x4, y4);
     totalArea = getArea(x1, y1, x2, y2) + getArea(x3, y3, x4, y4) - overlapArea;
-    System.out.println(overlapArea + " " + totalArea);
   }
 
   // get rectangle area
@@ -50,14 +50,7 @@ public class OverlappingRectangles {
   }
 
   // Get overlap area
-  private Integer getOverlap(
-      Integer x1,
-      Integer y1,
-      Integer x2,
-      Integer y2,
-      Integer x3,
-      Integer y3,
-      Integer x4,
+  private Integer getOverlap(Integer x1, Integer y1, Integer x2, Integer y2, Integer x3, Integer y3, Integer x4,
       Integer y4) {
     int overlap = 0;
 
