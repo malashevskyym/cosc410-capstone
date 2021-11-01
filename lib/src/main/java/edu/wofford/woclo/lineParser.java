@@ -37,7 +37,6 @@ public class LineParser {
     if (detectHelp(arguments)) {
       constructHelpMessage();
       System.out.println(helpMessage);
-      System.exit(0);
     }
 
     for (int i = 0; i < numArgs; i++) {
@@ -157,8 +156,8 @@ public class LineParser {
   public Float[] getArgumentsAsFloats() {
     Float[] array = new Float[arguments.size()];
     int index = 0;
-    for (Object value : arguments) {
-      array[index] = (Float) value;
+    for (String value : arguments) {
+      array[index] = Float.parseFloat(value);
       index++;
     }
     return array;

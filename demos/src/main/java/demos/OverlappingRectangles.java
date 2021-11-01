@@ -1,6 +1,7 @@
 package demos;
 
 import edu.wofford.woclo.*;
+import edu.wofford.woclo.LineParser.Datatype;
 
 // Total Area = (Area of 1st rectangle +
 //              Area of 2nd rectangle) -
@@ -15,23 +16,24 @@ public class OverlappingRectangles {
     // LineParser arguments = new LineParser(8, "Integer", args);
     // Integer[] coordinates = arguments.getArgs();
 
-    LineParser arguments = new LineParser(8, args);
+    LineParser arguments = new LineParser(8, args, Datatype.INTEGER);
 
-    // OverlappingRectangles Rectangles = new OverlappingRectangles();
-    // System.out.println(Rectangles.overlapArea + " " + Rectangles.totalArea);
+    OverlappingRectangles Rectangles =
+        new OverlappingRectangles(arguments.getArgumentsAsIntegers());
+    System.out.println(Rectangles.overlapArea + " " + Rectangles.totalArea);
   }
 
-  public OverlappingRectangles(Integer[] coord) {
+  public OverlappingRectangles(int[] is) {
     // First rectangle
-    int x1 = coord[0];
-    int y1 = coord[1];
-    int x2 = coord[2];
-    int y2 = coord[3];
+    int x1 = is[0];
+    int y1 = is[1];
+    int x2 = is[2];
+    int y2 = is[3];
     // Second Rectangle
-    int x3 = coord[4];
-    int y3 = coord[5];
-    int x4 = coord[6];
-    int y4 = coord[7];
+    int x3 = is[4];
+    int y3 = is[5];
+    int x4 = is[6];
+    int y4 = is[7];
 
     overlapArea = getOverlap(x1, y1, x2, y2, x3, y3, x4, y4);
     totalArea = getArea(x1, y1, x2, y2) + getArea(x3, y3, x4, y4) - overlapArea;
@@ -50,7 +52,14 @@ public class OverlappingRectangles {
   }
 
   // Get overlap area
-  private Integer getOverlap(Integer x1, Integer y1, Integer x2, Integer y2, Integer x3, Integer y3, Integer x4,
+  private Integer getOverlap(
+      Integer x1,
+      Integer y1,
+      Integer x2,
+      Integer y2,
+      Integer x3,
+      Integer y3,
+      Integer x4,
       Integer y4) {
     int overlap = 0;
 

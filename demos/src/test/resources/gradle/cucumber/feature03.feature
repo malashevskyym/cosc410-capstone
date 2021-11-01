@@ -60,7 +60,7 @@ Feature: Allow datatype information to be added to arguments so that non-string
     Given the program "<progname>" has started with arguments "<args>"
     When the user views the terminal
     Then the output should be "<output>"
-
+  
     Examples:
     | progname              | args                  | output    |
     | OverlappingRectangles | -3 0 3 4 0 -1 9 2     | 6 45      |
