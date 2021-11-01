@@ -1,127 +1,245 @@
 package edu.wofford.woclo;
 
+import java.util.*;
+
 public class LineParser {
-  private String[] args = new String[] {};
-  private String helpInfo = "";
+  public enum Datatype {
+    STRING,
+    INTEGER,
+    FLOAT
+  };
 
-  /**
-   * Constructor lineParser
-   *
-   * <p>Creates an instance of the mainArgs String Array that contains a key and the arguments
-   * passed in the command line.
-   *
-   * @param numArgs is the number of arguments being passed in the command lin.
-   * @param args are the arguments that are being passed in the command line.
-   */
-  public LineParser(int numArgs, String[] args) {
-    if (detectHelp(args)) {
-      System.out.println(helpInfo);
-      // Thread.setDefaultUncaughtExceptionHandler((t, e) ->
-      // System.err.println(e.getMessage()));
-      // throw new HelpException(helpInfo);
-    }
+  public String exceptionMessage = "";
 
-    if (numArgs > args.length) {
-      // Throw exception
+  private List<Datatype> types = new ArrayList<Datatype>();
+  private List<String> identifiers = new ArrayList<String>();
+  private List<String> arguments = new ArrayList<String>();
+  private List<Float> valueFloat = new ArrayList<Float>();
+  private List<Integer> valueInt = new ArrayList<Integer>();
+  private List<String> descriptions = new ArrayList<String>();
+  private String programHelpMessage = "";
+  private String helpMessage = "";
+  private Datatype type = Datatype.STRING;
 
-      throw new IllegalArgumentException("Too many arguments");
-
-    } else if (numArgs < args.length) {
-      // Throw exception
-      throw new IllegalArgumentException("Too few arguments");
-    }
-
-    // Deep copy
-    this.args = args.clone();
+  public LineParser(int numArgs, String[] arguments) {
+    this(numArgs, arguments, Datatype.STRING);
   }
 
   /**
-   * Constructor lineParser.
+   * Constructor LineParser
    *
-   * <p>Creates an instance of the mainArgs Hashtable that contains a key and the arguments passed
-   * in the command line.
+   * <p>Creates an instance of the mainArgs String Array that contains the arguments passed in the
+   * command line.
    *
-   * @param numArgs is the number of arguments being passed in the command line.
-   * @param args is the array of arguments that are being passed in the command line.
-   * @param helpInfo serves as an optional argument that stores a string of help info.
+   * @param arguments are the arguments that are being passed in the command line.
    */
-  public LineParser(int numArgs, String[] args, String helpInfo) {
-    if (detectHelp(args)) {
-      System.out.println(helpInfo);
-      // Thread.setDefaultUncaughtExceptionHandler((t, e) ->
-      // System.err.println(e.getMessage()));
-      // throw new HelpException(helpInfo);
+  public LineParser(int numArgs, String[] arguments, Datatype type) {
+    if (detectHelp(arguments)) {
+      constructHelpMessage();
+      System.out.println(helpMessage);
+      System.exit(0);
     }
 
-    if (numArgs > args.length) {
-      // Throw exception
-
-      throw new IllegalArgumentException("Too many arguments");
-
-    } else if (numArgs < args.length) {
-      // Throw exception
-      throw new IllegalArgumentException("Too few arguments");
+    for (int i = 0; i < numArgs; i++) {
+      addIdentifier(String.valueOf(i));
     }
-    this.helpInfo = helpInfo;
-    this.args = args.clone();
+
+    if (arguments.length > identifiers.size()) {
+      exceptionMessage = "Too many arguments";
+      throw new IllegalArgumentException(exceptionMessage);
+    } else if (arguments.length < identifiers.size()) {
+      exceptionMessage = "Too few arguments";
+      throw new IllegalArgumentException(exceptionMessage);
+    }
+    this.arguments = Arrays.asList(arguments);
+    this.type = type;
+    convertType(this.arguments);
   }
 
   /**
-   * @param argument String of argument we want the position of.
-   * @return Integer representing argument position.
+   * Adds a new identifier as the default type String and without a description.
+   *
+   * <p>Adds an identifier without a description for the Usage message. It's type will be a String.
+   *
+   * @param name The name of the identifier.
    */
-  public int getPosition(String argument) {
-    for (int i = 0; i < args.length; i++) {
-      if (args[i].equals(argument)) {
-        return i;
+  public void addIdentifier(String name) {
+    addIdentifier(Datatype.STRING, name, "");
+  }
+
+  /**
+   * Adds a new identifier as the default type String and with the provided description.
+   *
+   * <p>Adds an identifier with a description for the Usage message. It's type will be a String.
+   *
+   * @param name The name of the identifier.
+   * @param description The decription of the identifier.
+   */
+  public void addIdentifier(String name, String description) {
+    addIdentifier(Datatype.STRING, name, description);
+  }
+
+  /**
+   * Adds a new identifier as the default type String and with the provided description.
+   *
+   * <p>Adds an identifier with the specified type and with a description for the Usage message.
+   *
+   * @param type The type of the identifier.
+   * @param name The name of the identifier.
+   * @param description The decription of the identifier.
+   */
+  public void addIdentifier(Datatype type, String name, String description) {
+    types.add(type);
+    identifiers.add(name);
+    descriptions.add(description);
+  }
+
+  /**
+   * Adds a new identifier as the given type and with a description at the specified location.
+   *
+   * <p>Adds an identifier with the given type and with a description for the Usage message at the
+   * specicfied loacation.
+   *
+   * @param type The type of the identifier.
+   * @param name The name of the identifier.
+   * @param description The decription of the identifier.
+   * @param position The desired position to add the identifier at.
+   */
+  public void addIdentifier(Datatype type, String name, String description, Integer position) {
+    types.add(position, type);
+    identifiers.add(position, name);
+    descriptions.add(position, description);
+  }
+
+  /**
+   * Removes the specified identifier and all relevant data, including the value the identifier
+   * held.
+   *
+   * @param identifier The desired identifier to delete.
+   */
+  public void removeIdentifier(String identifier) {
+    int index = getArgumentPosition(identifier);
+    types.remove(index);
+    identifiers.remove(index);
+    arguments.remove(index);
+    descriptions.remove(index);
+  }
+
+  /**
+   * @param identifier The name of the identifier for the desired argument's position.
+   * @return an integer that represents the argument's position.
+   */
+  public int getArgumentPosition(String identifier) {
+    int position = identifiers.indexOf(identifier);
+    return position;
+  }
+
+  public String[] getArgumentsAsStrings() {
+    String[] array = new String[arguments.size()];
+    int index = 0;
+    for (Object value : arguments) {
+      array[index] = (String) value;
+      index++;
+    }
+    return array;
+  }
+
+  /**
+   * Converts the argument list to an array and returns the array.
+   *
+   * @return an array that holds the arguments passed to the command line.
+   */
+  public int[] getArgumentsAsIntegers() {
+    int[] array = valueInt.stream().mapToInt(i -> i).toArray();
+    return array;
+  }
+
+  public Float[] getArgumentsAsFloats() {
+    Float[] array = new Float[arguments.size()];
+    int index = 0;
+    for (Object value : arguments) {
+      array[index] = (Float) value;
+      index++;
+    }
+    return array;
+  }
+
+  /** @return Returns the Usage message. */
+  public String getHelpMessage() {
+    helpMessage = constructHelpMessage();
+    return helpMessage;
+  }
+
+  /** */
+  public void setProgramHelpMessage(String message) {
+    programHelpMessage = message + "\n\n";
+  }
+
+  /** */
+  public void setArgumentHelpMessage(int position, String message) {
+    descriptions.set(position, message);
+  }
+
+  private void convertType(List<String> arguments) {
+    int length = arguments.size();
+    if (type == Datatype.FLOAT) {
+      for (int i = 0; i < length; i++) {
+        try {
+          valueFloat.add(Float.parseFloat(arguments.get(i)));
+        } catch (Exception e) {
+          throw new InputMismatchException("The value" + arguments.get(i) + "is not of type float");
+        }
+      }
+    } else if (type == Datatype.INTEGER) {
+      for (int i = 0; i < length; i++) {
+        try {
+          valueInt.add(Integer.parseInt(arguments.get(i)));
+        } catch (Exception e) {
+          throw new InputMismatchException(
+              "The value" + arguments.get(i) + "is not of type integer");
+        }
+      }
+    } else {
+      this.arguments = arguments;
+    }
+  }
+
+  /**
+   * Builds the help message based on the current identifiers.
+   *
+   * @return the Usage message.
+   */
+  private String constructHelpMessage() {
+    helpMessage += programHelpMessage + "Usage:\n";
+    for (int i = 0; i < descriptions.size(); i++) {
+      Datatype type = types.get(i);
+      if (type == Datatype.INTEGER) {
+        helpMessage += "  Integer ";
+      } else if (type == Datatype.FLOAT) {
+        helpMessage += "  Float   ";
+      } else {
+        helpMessage += "  String  ";
+      }
+      helpMessage += identifiers.get(i);
+      String description = descriptions.get(i);
+      if (!description.equals("")) {
+        helpMessage += "    - " + description + "\n";
+      } else {
+        helpMessage += "\n";
       }
     }
-    throw new IllegalArgumentException();
+    return helpMessage;
   }
 
   /**
-   * @param position Position of argument.
-   * @return Returns argument in args array.
-   */
-  public String getArgsArray(int position) {
-    return args[position];
-  }
-
-  /** @return Returns help info debug. */
-  public String getHelpMessage() {
-    return helpInfo;
-  }
-
-  /**
-   * Returns args array from lineParser class.
+   * Detects if the arguments in command line contains either '--help' or '-h'.
    *
-   * @return Returns args array that is available in the lineParser class.
+   * @param arguments The command line arguments.
+   * @return true if the arguments contain '--help' or '-h', otherwise false.
    */
-  public String[] getArgs() {
-    // Make a deep copy here
-    String[] copy = args.clone();
-    return copy;
-  }
-
-  /**
-   * sets args array in the lineParse class to the args array being passed.
-   *
-   * @param args String array representing the command line arguments.
-   */
-  public void setArgs(String[] args) {
-    // Deep copy here
-    this.args = args.clone();
-  }
-
-  /**
-   * Detects if the argmuments in command line contain a --help or -h.
-   *
-   * @param args String array we are checking help is within.
-   * @return Returns boolean true if args does contain --help or -h.
-   */
-  private boolean detectHelp(String[] args) {
-    for (int i = 0; i < args.length; i++) {
-      if (args[i].equals("--help") || args[i].equals("-h")) {
+  private boolean detectHelp(String[] arguments) {
+    for (int i = 0; i < arguments.length; i++) {
+      if (arguments[i].equals("-h") || arguments[i].equals("--help")) {
         return true;
       }
     }
