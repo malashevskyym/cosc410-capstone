@@ -195,4 +195,34 @@ public class LineParserTest {
           Test.parse(test1);
         });
   }
+
+  @Test
+  public void testParseToString() {
+    LineParser Test = new LineParser();
+    Test.addRequiredArgument("X", LineParser.Datatype.STRING, "String to String");
+
+    String[] test1 = new String[] {"Hello"};
+    Test.parse(test1);
+    assertEquals("Hello", Test.getArgument("X"));
+  }
+
+  @Test
+  public void testParseToInteger() {
+    LineParser Test = new LineParser();
+    Test.addRequiredArgument("X", LineParser.Datatype.INTEGER, "String to Integer");
+
+    String[] test1 = new String[] {"11"};
+    Test.parse(test1);
+    assertEquals((Integer) 11, Test.getArgument("X"));
+  }
+
+  @Test
+  public void testParseToFloat() {
+    LineParser Test = new LineParser();
+    Test.addRequiredArgument("X", LineParser.Datatype.FLOAT, "String to Float");
+
+    String[] test1 = new String[] {"3.14"};
+    Test.parse(test1);
+    assertEquals((Float) 3.14f, Test.getArgument("X"));
+  }
 }
