@@ -178,7 +178,7 @@ public class LineParser {
             Float.parseFloat(required.get(i));
           } catch (NumberFormatException e) {
             throw new IllegalArgumentException(
-                "the value " + argsPosition.get(i) + " is not of type float");
+                "the value " + required.get(i) + " is not of type float");
           }
 
         } else if (arguments.get(argsPosition.get(i)).type == Datatype.INTEGER) {
@@ -187,7 +187,7 @@ public class LineParser {
             Integer.parseInt(required.get(i));
           } catch (NumberFormatException e) {
             throw new IllegalArgumentException(
-                "the value " + argsPosition.get(i) + " is not of type integer");
+                "the value " + required.get(i) + " is not of type integer");
           }
         }
         arguments.get(argsPosition.get(i)).setValue(required.get(i));
@@ -228,21 +228,23 @@ public class LineParser {
   private String constructHelpMessage() {
     String helpMessage = "";
 
-    helpMessage += "Usage:";
-    helpMessage += useInfo + "\npositional arguments:";
+    helpMessage += "usage: " + useInfo + "\n\npositional arguments:";
     StringBuffer buf = new StringBuffer();
     for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
 
       if (entry.getValue().type == Datatype.INTEGER) {
-        buf.append(entry.getKey() + "          " + "(integer)" + "     " + entry.getValue().help);
+        buf.append(
+            "\n " + entry.getKey() + "     " + "(integer)" + "      " + entry.getValue().help);
       } else if (entry.getValue().type == Datatype.FLOAT) {
-        buf.append(entry.getKey() + "          " + "(float)" + "     " + entry.getValue().help);
+        buf.append("\n " + entry.getKey() + "     " + "(float)" + "      " + entry.getValue().help);
       } else if (entry.getValue().type == Datatype.STRING) {
-        buf.append(entry.getKey() + "          " + "(string)" + "     " + entry.getValue().help);
+        buf.append(
+            "\n " + entry.getKey() + "     " + "(string)" + "      " + entry.getValue().help);
       }
     }
 
-    helpMessage += "named arguments:\n -h, --help  show this help message and exit";
+    helpMessage += buf;
+    helpMessage += "\n\nnamed arguments:\n -h, --help  show this help message and exit";
     return helpMessage;
   }
 

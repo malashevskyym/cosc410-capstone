@@ -4,33 +4,44 @@ import edu.wofford.woclo.*;
 import java.util.LinkedHashSet;
 
 public class EquivalentStrings {
+  public static String message = "";
+  public static String error = "";
 
   public static void main(String... args) {
     String helpMessage =
-        "This program determines if two strings are 'equivalent'. Equivalent means one string can be transformed into the other by substituting one letter for another consistently.";
+        "java EquivalentStrings [-h] string1 string2\n\nDetermine if two strings are equivalent.";
     LineParser parser = new LineParser(helpMessage);
-    parser.addRequiredArgument("first", LineParser.Datatype.STRING, "The first string");
-    parser.addRequiredArgument("second", LineParser.Datatype.STRING, "The second string");
+    parser.addRequiredArgument("string1", LineParser.Datatype.STRING, "the first string");
+    parser.addRequiredArgument("string2", LineParser.Datatype.STRING, "the second string");
 
-    parser.parse(args);
-
-    EquivalentStrings execute = new EquivalentStrings();
-    if (execute.isEquivalent(parser.getArgument("first"), parser.getArgument("second"))) {
-      System.out.println("equivalent");
-    } else {
-      System.out.println("not equivalent");
+    try {
+      parser.parse(args);
+      String stringOne = parser.getArgument("string1");
+      String stringTwo = parser.getArgument("string2");
+      if (isEquivalent(stringOne, stringTwo)) {
+        message = "equivalent";
+        System.out.println(message);
+      } else {
+        message = "not equivalent";
+        System.out.println(message);
+      }
+    } catch (Exception e) {
+      error = "EquivalentStrings error: " + e.getMessage();
+      System.out.println(error);
     }
   }
 
   public EquivalentStrings() {}
 
-  private String convertStringToExpression(String s) {
+  private static String convertStringToExpression(String s) {
     String expression = s;
-    int uniqueCode = 0;
     LinkedHashSet<String> uniqueChars = new LinkedHashSet<String>();
+
     for (int i = 0; i < s.length(); i++) {
       uniqueChars.add(String.valueOf(s.charAt(i)));
     }
+
+    int uniqueCode = 0;
     for (String character : uniqueChars) {
       expression = expression.replace(character, String.valueOf(uniqueCode));
       uniqueCode++;
@@ -38,17 +49,17 @@ public class EquivalentStrings {
     return expression;
   }
 
-  private boolean checkSameLength(String first, String second) {
+  private static boolean checkSameLength(String first, String second) {
     if (first.length() == second.length()) {
       return true;
     }
     return false;
   }
 
-  public boolean isEquivalent(String first, String second) {
+  public static boolean isEquivalent(String first, String second) {
     String convertedFirst = convertStringToExpression(first);
     String convertedSecond = convertStringToExpression(second);
-    if (!checkSameLength(first, second) && convertedFirst.equals(convertedSecond)) {
+    if (checkSameLength(first, second) && convertedFirst.equals(convertedSecond)) {
       return true;
     }
     return false;
