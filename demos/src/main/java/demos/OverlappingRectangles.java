@@ -1,6 +1,7 @@
 package demos;
 
 import edu.wofford.woclo.*;
+import edu.wofford.woclo.LineParser.Datatype;
 
 // Total Area = (Area of 1st rectangle +
 //              Area of 2nd rectangle) -
@@ -12,13 +13,38 @@ public class OverlappingRectangles {
   int overlapArea = 0;
 
   public static void main(String... args) {
-    // LineParser arguments = new LineParser(8, "Integer", args);
-    // Integer[] coordinates = arguments.getArgs();
+    LineParser parse =
+        new LineParser(
+            "java OverlappingRectangles [-h] x1 y1 x2 y2 x3 y3 x4 y4\n\nDetermine the overlap and total area of two rectangles.");
+    parse.addRequiredArgument("x1", Datatype.INTEGER, "lower-left x for rectangle 1");
+    parse.addRequiredArgument("y1", Datatype.INTEGER, "lower-left y for rectangle 1");
+    parse.addRequiredArgument("x2", Datatype.INTEGER, "upper-right x for rectangle 1");
+    parse.addRequiredArgument("y2", Datatype.INTEGER, "upper-right y for rectangle 1");
+    parse.addRequiredArgument("x3", Datatype.INTEGER, "lower-left x for rectangle 2");
+    parse.addRequiredArgument("y3", Datatype.INTEGER, "lower-left y for rectangle 2");
+    parse.addRequiredArgument("x4", Datatype.INTEGER, "upper-right x for rectangle 2");
+    parse.addRequiredArgument("y4", Datatype.INTEGER, "upper-right y for rectangle 2");
 
-    // LineParser arguments = new LineParser(8, args, Datatype.INTEGER);
+    try {
+      parse.parse(args);
+      Integer[] values =
+          new Integer[] {
+            parse.getArgument("x1"),
+            parse.getArgument("y1"),
+            parse.getArgument("x2"),
+            parse.getArgument("y2"),
+            parse.getArgument("x3"),
+            parse.getArgument("y3"),
+            parse.getArgument("x4"),
+            parse.getArgument("y4")
+          };
 
-    OverlappingRectangles Rectangles = new OverlappingRectangles(new Integer[] {1, 2, 3, 4});
-    System.out.println(Rectangles.overlapArea + " " + Rectangles.totalArea);
+      OverlappingRectangles Rectangles = new OverlappingRectangles(values);
+
+      System.out.println(Rectangles.overlapArea + " " + Rectangles.totalArea);
+    } catch (Exception e) {
+      System.out.println("OverlappingRectangles error: " + e.getMessage());
+    }
   }
 
   public OverlappingRectangles(Integer[] integers) {

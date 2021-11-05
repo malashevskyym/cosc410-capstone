@@ -197,6 +197,70 @@ public class LineParserTest {
   }
 
   @Test
+  public void testConvertFloatOptional2() {
+    LineParser Test = new LineParser();
+    Test.addRequiredArgument("X", LineParser.Datatype.INTEGER, "Length");
+    Test.addRequiredArgument("Y", LineParser.Datatype.INTEGER, "Width");
+    Test.addRequiredArgument("Z", LineParser.Datatype.FLOAT, "Height");
+    Test.addOptionalArgument("type", LineParser.Datatype.FLOAT, "Box");
+
+    String[] test1 = new String[] {"2", "z", "--type", "box"};
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          Test.parse(test1);
+        });
+  }
+
+  @Test
+  public void testNamedNoValue() {
+    LineParser Test = new LineParser();
+    Test.addRequiredArgument("X", LineParser.Datatype.INTEGER, "Length");
+    Test.addRequiredArgument("Y", LineParser.Datatype.INTEGER, "Width");
+    Test.addRequiredArgument("Z", LineParser.Datatype.FLOAT, "Height");
+    Test.addOptionalArgument("type", LineParser.Datatype.INTEGER, "Box");
+
+    String[] test1 = new String[] {"2", "z", "--type", "--box"};
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          Test.parse(test1);
+        });
+  }
+
+  @Test
+  public void testNamedNoValue2() {
+    LineParser Test = new LineParser();
+    Test.addRequiredArgument("X", LineParser.Datatype.INTEGER, "Length");
+    Test.addRequiredArgument("Y", LineParser.Datatype.INTEGER, "Width");
+    Test.addRequiredArgument("Z", LineParser.Datatype.FLOAT, "Height");
+    Test.addOptionalArgument("type", LineParser.Datatype.INTEGER, "Box");
+
+    String[] test1 = new String[] {"2", "z", "--type", "-box"};
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          Test.parse(test1);
+        });
+  }
+
+  @Test
+  public void testNamedValueFloat() {
+    LineParser Test = new LineParser();
+    Test.addRequiredArgument("X", LineParser.Datatype.INTEGER, "Length");
+    Test.addRequiredArgument("Y", LineParser.Datatype.INTEGER, "Width");
+    Test.addRequiredArgument("Z", LineParser.Datatype.FLOAT, "Height");
+    Test.addOptionalArgument("type", LineParser.Datatype.FLOAT, "Box");
+
+    String[] test1 = new String[] {"2", "3", "4.0", "--type", "box"};
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          Test.parse(test1);
+        });
+  }
+
+  @Test
   public void testParseToString() {
     LineParser Test = new LineParser();
     Test.addRequiredArgument("X", LineParser.Datatype.STRING, "String to String");
@@ -221,8 +285,8 @@ public class LineParserTest {
     LineParser Test = new LineParser();
     Test.addRequiredArgument("X", LineParser.Datatype.FLOAT, "String to Float");
 
-    String[] test1 = new String[] {"3.14"};
+    String[] test1 = new String[] {"3.15"};
     Test.parse(test1);
-    assertEquals((Float) 3.14f, Test.getArgument("X"));
+    assertEquals((Float) 3.15f, Test.getArgument("X"));
   }
 }
