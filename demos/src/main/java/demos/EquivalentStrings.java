@@ -1,76 +1,67 @@
 package demos;
 
 import edu.wofford.woclo.*;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 
 public class EquivalentStrings {
-  protected String string1;
-  protected ArrayList<String> string1ListChars = new ArrayList<String>();
-  protected String string2;
-  protected ArrayList<String> string2ListChars = new ArrayList<String>();
+  public static String message = "";
+  public static String error = "";
 
   public static void main(String... args) {
-
     String helpMessage =
-        "usage: java EquivalentStrings [-h] string1 string2\n\nDetermine if two strings are equivalent.\n\npositional arguments:\n string1     (string)      the first string\n string2     (string)      the second string\n\nnamed arguments:\n -h, --help  show this help message and exit";
+        "java EquivalentStrings [-h] string1 string2\n\nDetermine if two strings are equivalent.";
+    LineParser parser = new LineParser(helpMessage);
+    parser.addRequiredArgument("string1", LineParser.Datatype.STRING, "the first string");
+    parser.addRequiredArgument("string2", LineParser.Datatype.STRING, "the second string");
 
-    String[] stringArgs = new String[] {"coco"};
-    if (stringArgs.length == 0) {
-      String message = "EquivalentStrings error: the argument string1 is required";
-      System.out.print(message);
-    } else if (stringArgs.length == 1) {
-      String message = "EquivalentStrings error: the argument string2 is required";
-      System.out.print(message);
-    } else if (stringArgs.length > 2) {
-      String message =
-          "EquivalentStrings error: the value " + stringArgs[2] + " matches no argument";
-      System.out.print(message);
-    } else {
-      EquivalentStrings obj = new EquivalentStrings(stringArgs[0], stringArgs[1]);
-      obj.isEquivalent();
+    try {
+      parser.parse(args);
+      String stringOne = parser.getArgument("string1");
+      String stringTwo = parser.getArgument("string2");
+      if (isEquivalent(stringOne, stringTwo)) {
+        message = "equivalent";
+        System.out.println(message);
+      } else {
+        message = "not equivalent";
+        System.out.println(message);
+      }
+    } catch (Exception e) {
+      error = "EquivalentStrings error: " + e.getMessage();
+      System.out.println(error);
     }
   }
 
-  public EquivalentStrings(String string1, String string2) {
-    this.string1 = string1;
-    for (int i = 0; i < string1.length(); i++) {
-      string1ListChars.add(Character.toString(string1.charAt(i)));
+  public EquivalentStrings() {}
+
+  private static String convertStringToExpression(String s) {
+    String expression = s;
+    LinkedHashSet<String> uniqueChars = new LinkedHashSet<String>();
+
+    for (int i = 0; i < s.length(); i++) {
+      uniqueChars.add(String.valueOf(s.charAt(i)));
     }
-    this.string2 = string2;
-    for (int i = 0; i < string2.length(); i++) {
-      string2ListChars.add(Character.toString(string2.charAt(i)));
+
+    int uniqueCode = 0;
+    for (String character : uniqueChars) {
+      expression = expression.replace(character, String.valueOf(uniqueCode));
+      uniqueCode++;
     }
+    return expression;
   }
 
-  protected boolean checkSameLength() {
-    if (string1.length() == string2.length()) {
+  private static boolean checkSameLength(String first, String second) {
+    if (first.length() == second.length()) {
       return true;
     }
     return false;
   }
 
-  protected String convertStringToExpression(
-      String string, LinkedHashSet<String> stringOfUniqueChars) {
-    int expr = 0;
-    String convertedString = string;
-    for (String character : stringOfUniqueChars) {
-      convertedString = convertedString.replace(character, String.valueOf(expr));
-      expr++;
+  public static boolean isEquivalent(String first, String second) {
+    String convertedFirst = convertStringToExpression(first);
+    String convertedSecond = convertStringToExpression(second);
+    if (checkSameLength(first, second) && convertedFirst.equals(convertedSecond)) {
+      return true;
     }
-    return convertedString;
-  }
-
-  protected void isEquivalent() {
-    LinkedHashSet<String> string1UniqueChars = new LinkedHashSet<String>(string1ListChars);
-    String convertedString1 = convertStringToExpression(string1, string1UniqueChars);
-    LinkedHashSet<String> string2UniqueChars = new LinkedHashSet<String>(string2ListChars);
-    String convertedString2 = convertStringToExpression(string2, string2UniqueChars);
-
-    if (checkSameLength() && convertedString1.equals(convertedString2)) {
-      System.out.print("equivalent");
-    } else {
-      System.out.print("not equivalent");
-    }
+    return false;
   }
 }

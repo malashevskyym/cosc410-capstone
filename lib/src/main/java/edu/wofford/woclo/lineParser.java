@@ -112,6 +112,12 @@ public class LineParser {
     return arg;
   }
 
+  /**
+   * Parses the desired argument to its type and returns the value as that type.
+   *
+   * @param identifer The key for the desired argument.
+   * @return The argument parsed to its type.
+   */
   public <T> T getArgument(String identifier) {
     String value = arguments.get(identifier).value;
     return (T) arguments.get(identifier).type.parseType(value);
@@ -153,6 +159,7 @@ public class LineParser {
             optionals.add(args[i + 1]);
             required.remove(i);
             required.remove(i);
+            i = i - 1;
           }
         }
       }
@@ -188,15 +195,14 @@ public class LineParser {
       for (int i = 0; i < optionals.size(); i++) {
         if (optionals.get(i).substring(0, 1).equals("-")) {
           if (optionals.get(i).substring(1, 2).equals("-")) {
-            // This is the fucked up part
-            if (arguments.get(optionals.get(i).substring(2)).type == Datatype.FLOAT) {
+            if (arguments.get(optionals.get(i)).type == Datatype.FLOAT) {
               try {
                 Float.parseFloat(optionals.get(i + 1));
               } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("the value " + optionals.get(i) + " is not of type float");
               }
 
-            } else if (arguments.get(optionals.get(i).substring(2)).type == Datatype.INTEGER) {
+            } else if (arguments.get(optionals.get(i)).type == Datatype.INTEGER) {
 
               try {
                 Integer.parseInt(optionals.get(i + 1));
@@ -204,7 +210,6 @@ public class LineParser {
                 throw new IllegalArgumentException("the value " + optionals.get(i) + " is not of type integer");
               }
             }
-            // Fuckiness end here
             arguments.get(optionals.get(i).substring(2)).setValue(optionals.get(i + 1));
           }
         }
