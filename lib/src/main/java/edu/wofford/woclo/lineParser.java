@@ -9,9 +9,7 @@ public class LineParser {
 
   /** Represents data types. */
   public enum Datatype {
-    STRING("STRING"),
-    INTEGER("INT"),
-    FLOAT("FLOAT");
+    STRING("STRING"), INTEGER("INT"), FLOAT("FLOAT");
 
     public final String label;
 
@@ -22,18 +20,19 @@ public class LineParser {
     @SuppressWarnings("unchecked")
     public <T> T parseType(String value) {
       switch (this) {
-        case INTEGER:
-          return (T) Integer.valueOf(value);
-        case FLOAT:
-          return (T) Float.valueOf(value);
-        default:
-          return (T) value;
+      case INTEGER:
+        return (T) Integer.valueOf(value);
+      case FLOAT:
+        return (T) Float.valueOf(value);
+      default:
+        return (T) value;
       }
     }
   };
 
   /** Constructs an empty map of named arguments. */
-  public LineParser() {};
+  public LineParser() {
+  };
 
   /**
    * Constructs an empty map of named arguments.
@@ -45,8 +44,8 @@ public class LineParser {
   }
 
   /**
-   * Specify an argument to come through the command line. Adds the argument to the argument map,
-   * declaring a type.
+   * Specify an argument to come through the command line. Adds the argument to
+   * the argument map, declaring a type.
    *
    * @param name The name of the argument (what its called).
    * @param type The data type of the argument (float, int, or string).
@@ -57,8 +56,8 @@ public class LineParser {
   }
 
   /**
-   * Specify an argument to come through the command line. Adds the argument to the argument map,
-   * declaring a type.
+   * Specify an argument to come through the command line. Adds the argument to
+   * the argument map, declaring a type.
    *
    * @param name The name of the argument (what its called).
    * @param type The data type of the argument (float, int, or string).
@@ -72,8 +71,8 @@ public class LineParser {
   /**
    * Request an argument that will be optional in the command line.
    *
-   * @param name The name of the argument (what its called).
-   * @param type The data type of the argument (float, int, or string).
+   * @param name         The name of the argument (what its called).
+   * @param type         The data type of the argument (float, int, or string).
    * @param defaultValue The default value for the optional parameter.
    */
   public void addOptionalArgument(String name, Datatype type, String defaultValue) {
@@ -84,10 +83,11 @@ public class LineParser {
   /**
    * Request an argument that will be optional in the command line.
    *
-   * @param name The name of the argument (what its called).
-   * @param type The data type of the argument (float, int, or string).
+   * @param name         The name of the argument (what its called).
+   * @param type         The data type of the argument (float, int, or string).
    * @param defaultValue The default value for the optional parameter.
-   * @param help Any additional descriptive help information about the argument.
+   * @param help         Any additional descriptive help information about the
+   *                     argument.
    */
   public void addOptionalArgument(String name, Datatype type, String defaultValue, String help) {
     arguments.put(name, new Argument(type, help));
@@ -118,10 +118,11 @@ public class LineParser {
   }
 
   /**
-   * Parses the given command line arguments and maps them to a value. Returns exceptions under the
-   * following cases: -If there are more non-named arguments than identifiers. -If there are less
-   * non named arguments than identifiers. -If a given argument value cannot be converted to its
-   * specified type. -If a named argument is declared but not followed by a value.
+   * Parses the given command line arguments and maps them to a value. Returns
+   * exceptions under the following cases: -If there are more non-named arguments
+   * than identifiers. -If there are less non named arguments than identifiers.
+   * -If a given argument value cannot be converted to its specified type. -If a
+   * named argument is declared but not followed by a value.
    *
    * @param args String array representation of command line values.
    */
@@ -143,9 +144,8 @@ public class LineParser {
         if (required.get(i).substring(0, 1).equals("-")) {
 
           if (required.get(i).substring(1, 2).equals("-")) {
-            if ((i == required.size() - 1)
-                || (required.get(i + 1).substring(0, 1).equals("-")
-                    && required.get(i + 1).substring(1, 2).equals("-"))) {
+            if ((i == required.size() - 1) || (required.get(i + 1).substring(0, 1).equals("-")
+                && required.get(i + 1).substring(1, 2).equals("-"))) {
               throw new IllegalArgumentException("no value for " + required.get(i));
             }
 
@@ -171,8 +171,7 @@ public class LineParser {
           try {
             Float.parseFloat(required.get(i));
           } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(
-                "the value " + required.get(i) + " is not of type float");
+            throw new IllegalArgumentException("the value " + required.get(i) + " is not of type float");
           }
 
         } else if (arguments.get(argsPosition.get(i)).type == Datatype.INTEGER) {
@@ -180,8 +179,7 @@ public class LineParser {
           try {
             Integer.parseInt(required.get(i));
           } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(
-                "the value " + required.get(i) + " is not of type integer");
+            throw new IllegalArgumentException("the value " + required.get(i) + " is not of type integer");
           }
         }
         arguments.get(argsPosition.get(i)).setValue(required.get(i));
@@ -195,8 +193,7 @@ public class LineParser {
               try {
                 Float.parseFloat(optionals.get(i + 1));
               } catch (NumberFormatException e) {
-                throw new IllegalArgumentException(
-                    "the value " + optionals.get(i) + " is not of type float");
+                throw new IllegalArgumentException("the value " + optionals.get(i) + " is not of type float");
               }
 
             } else if (arguments.get(optionals.get(i).substring(2)).type == Datatype.INTEGER) {
@@ -204,8 +201,7 @@ public class LineParser {
               try {
                 Integer.parseInt(optionals.get(i + 1));
               } catch (NumberFormatException e) {
-                throw new IllegalArgumentException(
-                    "the value " + optionals.get(i) + " is not of type integer");
+                throw new IllegalArgumentException("the value " + optionals.get(i) + " is not of type integer");
               }
             }
             // Fuckiness end here
@@ -230,32 +226,14 @@ public class LineParser {
     for (int i = 0; i < argsPosition.size(); i++) {
 
       if (arguments.get(argsPosition.get(i)).type == Datatype.INTEGER) {
-        buf.append(
-            " "
-                + argsPosition.get(i)
-                + "          "
-                + "(integer)"
-                + "     "
-                + arguments.get(argsPosition.get(i)).help
-                + "\n");
+        buf.append(" " + argsPosition.get(i) + "          " + "(integer)" + "     "
+            + arguments.get(argsPosition.get(i)).help + "\n");
       } else if (arguments.get(argsPosition.get(i)).type == Datatype.FLOAT) {
-        buf.append(
-            " "
-                + argsPosition.get(i)
-                + "          "
-                + "(float)"
-                + "     "
-                + arguments.get(argsPosition.get(i)).help
-                + "\n");
+        buf.append(" " + argsPosition.get(i) + "          " + "(float)" + "     "
+            + arguments.get(argsPosition.get(i)).help + "\n");
       } else if (arguments.get(argsPosition.get(i)).type == Datatype.STRING) {
-        buf.append(
-            " "
-                + argsPosition.get(i)
-                + "          "
-                + "(STRING)"
-                + "     "
-                + arguments.get(argsPosition.get(i)).help
-                + "\n");
+        buf.append(" " + argsPosition.get(i) + "          " + "(STRING)" + "     "
+            + arguments.get(argsPosition.get(i)).help + "\n");
         ;
       }
     }
