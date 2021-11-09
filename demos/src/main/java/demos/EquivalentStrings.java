@@ -6,8 +6,7 @@ import java.util.LinkedHashSet;
 public class EquivalentStrings {
 
   public static void main(String... args) {
-    String helpMessage =
-        "java EquivalentStrings [-h] string1 string2\n\nDetermine if two strings are equivalent.";
+    String helpMessage = "java EquivalentStrings [-h] string1 string2\n\nDetermine if two strings are equivalent.";
     LineParser parser = new LineParser(helpMessage);
     parser.addRequiredArgument("string1", LineParser.Datatype.STRING, "the first string");
     parser.addRequiredArgument("string2", LineParser.Datatype.STRING, "the second string");

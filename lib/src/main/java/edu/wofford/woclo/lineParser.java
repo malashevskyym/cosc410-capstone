@@ -11,9 +11,7 @@ public class LineParser {
 
   /** Represents data types. */
   public enum Datatype {
-    STRING("STRING"),
-    INTEGER("INT"),
-    FLOAT("FLOAT");
+    STRING("STRING"), INTEGER("INT"), FLOAT("FLOAT");
 
     public final String label;
 
@@ -24,18 +22,19 @@ public class LineParser {
     @SuppressWarnings("unchecked")
     public <T> T parseType(String value) {
       switch (this) {
-        case INTEGER:
-          return (T) Integer.valueOf(value);
-        case FLOAT:
-          return (T) Float.valueOf(value);
-        default:
-          return (T) value;
+      case INTEGER:
+        return (T) Integer.valueOf(value);
+      case FLOAT:
+        return (T) Float.valueOf(value);
+      default:
+        return (T) value;
       }
     }
   };
 
   /** Constructs an empty map of named arguments. */
-  public LineParser() {};
+  public LineParser() {
+  };
 
   /**
    * Constructs an empty map of named arguments.
@@ -47,8 +46,8 @@ public class LineParser {
   }
 
   /**
-   * Specify an argument to come through the command line. Adds the argument to the argument map,
-   * declaring a type.
+   * Specify an argument to come through the command line. Adds the argument to
+   * the argument map, declaring a type.
    *
    * @param name The name of the argument (what its called).
    * @param type The data type of the argument (float, int, or string).
@@ -59,8 +58,8 @@ public class LineParser {
   }
 
   /**
-   * Specify an argument to come through the command line. Adds the argument to the argument map,
-   * declaring a type.
+   * Specify an argument to come through the command line. Adds the argument to
+   * the argument map, declaring a type.
    *
    * @param name The name of the argument (what its called).
    * @param type The data type of the argument (float, int, or string).
@@ -74,8 +73,8 @@ public class LineParser {
   /**
    * Request an argument that will be optional in the command line.
    *
-   * @param name The name of the argument (what its called).
-   * @param type The data type of the argument (float, int, or string).
+   * @param name         The name of the argument (what its called).
+   * @param type         The data type of the argument (float, int, or string).
    * @param defaultValue The default value for the optional parameter.
    */
   public void addOptionalArgument(String name, Datatype type, String defaultValue) {
@@ -86,10 +85,11 @@ public class LineParser {
   /**
    * Request an argument that will be optional in the command line.
    *
-   * @param name The name of the argument (what its called).
-   * @param type The data type of the argument (float, int, or string).
+   * @param name         The name of the argument (what its called).
+   * @param type         The data type of the argument (float, int, or string).
    * @param defaultValue The default value for the optional parameter.
-   * @param help Any additional descriptive help information about the argument.
+   * @param help         Any additional descriptive help information about the
+   *                     argument.
    */
   public void addOptionalArgument(String name, Datatype type, String defaultValue, String help) {
     arguments.put(name, new Argument(type, help));
@@ -117,7 +117,7 @@ public class LineParser {
   /**
    * Parses the desired argument to its type and returns the value as that type.
    *
-   * @param identifer The key for the desired argument.
+   * @param identifier identifer The key for the desired argument.
    * @return The argument parsed to its type.
    */
   @SuppressWarnings("unchecked")
@@ -213,7 +213,7 @@ public class LineParser {
   public void parse(String[] args) {
     String helpMessage = constructHelpMessage();
     if (detectHelp(args)) {
-      System.out.println(helpMessage);
+      System.out.println(useInfo);
     } else {
       buildArgumentLists(args);
 
@@ -235,28 +235,23 @@ public class LineParser {
    *
    * @return A string containing usage information.
    */
-  private String constructHelpMessage() {
-    String helpMessage = "";
-
-    helpMessage += "usage: " + useInfo + "\n\npositional arguments:";
+  private String constructHelpMessage() { String helpMessage = "";
+    helpMessage += "usage: ";
+    helpMessage += useInfo + "\n\npositional arguments:\n";
     StringBuffer buf = new StringBuffer();
-    for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
-
-      if (entry.getValue().type == Datatype.INTEGER) {
-        buf.append(
-            "\n " + entry.getKey() + "     " + "(integer)" + "      " + entry.getValue().help);
-      } else if (entry.getValue().type == Datatype.FLOAT) {
-        buf.append("\n " + entry.getKey() + "     " + "(float)" + "      " + entry.getValue().help);
-      } else if (entry.getValue().type == Datatype.STRING) {
-        buf.append(
-            "\n " + entry.getKey() + "     " + "(string)" + "      " + entry.getValue().help);
-      }
+    for (int i = 0; i < argsPosition.size(); i++) {
+      if (arguments.get(argsPosition.get(i)).type == Datatype.INTEGER) {
+      buf.append( " " + argsPosition.get(i) + "          " + "(integer)" + "     " + arguments.get(argsPosition.get(i)).help + "\n");
+      } else if (arguments.get(argsPosition.get(i)).type == Datatype.FLOAT) {
+        buf.append( " " + argsPosition.get(i) + "          " + "(float)" + "     " + arguments.get(argsPosition.get(i)).help + "\n");
+      } else if (arguments.get(argsPosition.get(i)).type == Datatype.STRING) {
+        buf.append(" " + argsPosition.get(i) + "          " + "(string)" + "     " + arguments.get(argsPosition.get(i)).help + "\n");
+      } 
     }
-
-    helpMessage += buf;
-    helpMessage += "\n\nnamed arguments:\n -h, --help  show this help message and exit";
+    helpMessage += buf + "\n";
+    helpMessage += "named arguments:\n -h, --help  show this help message and exit";
     return helpMessage;
-  }
+    }
 
   /**
    * Detects a help command in the command line.
