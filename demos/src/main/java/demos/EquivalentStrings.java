@@ -4,8 +4,6 @@ import edu.wofford.woclo.*;
 import java.util.LinkedHashSet;
 
 public class EquivalentStrings {
-  public static String message = "";
-  public static String error = "";
 
   public static void main(String... args) {
     String helpMessage =
@@ -16,24 +14,48 @@ public class EquivalentStrings {
 
     try {
       parser.parse(args);
-      String stringOne = parser.getArgument("string1");
-      String stringTwo = parser.getArgument("string2");
-      if (isEquivalent(stringOne, stringTwo)) {
-        message = "equivalent";
-        System.out.println(message);
-      } else {
-        message = "not equivalent";
-        System.out.println(message);
-      }
+      String[] values = new String[] {parser.getArgument("string1"), parser.getArgument("string2")};
+      EquivalentStrings equivalentStrings = new EquivalentStrings(values);
     } catch (Exception e) {
-      error = "EquivalentStrings error: " + e.getMessage();
-      System.out.println(error);
+      System.out.println("EquivalentStrings error: " + e.getMessage());
     }
   }
 
-  public EquivalentStrings() {}
+  public EquivalentStrings(String[] strings) {
+    String string1 = strings[0];
+    String string2 = strings[1];
 
-  private static String convertStringToExpression(String s) {
+    System.out.println(checkIfEquivalent(string1, string2));
+  }
+
+  public String checkIfEquivalent(String stringOne, String stringTwo) {
+    if (isEquivalent(stringOne, stringTwo)) {
+      return "equivalent";
+    } else {
+      return "not equivalent";
+    }
+  }
+
+  public String checkIfWorks(String[] args) {
+    LineParser parser = new LineParser();
+    parser.addRequiredArgument("string1", LineParser.Datatype.STRING, "the first string");
+    parser.addRequiredArgument("string2", LineParser.Datatype.STRING, "the second string");
+
+    String message = "";
+    try {
+      parser.parse(args);
+      if (isEquivalent(args[0], args[1])) {
+        message = "equivalent";
+      } else {
+        message = "not equivalent";
+      }
+    } catch (Exception e) {
+      message = "EquivalentStrings error: " + e.getMessage();
+    }
+    return message;
+  }
+
+  private String convertStringToExpression(String s) {
     String expression = s;
     LinkedHashSet<String> uniqueChars = new LinkedHashSet<String>();
 
@@ -49,14 +71,14 @@ public class EquivalentStrings {
     return expression;
   }
 
-  private static boolean checkSameLength(String first, String second) {
+  private boolean checkSameLength(String first, String second) {
     if (first.length() == second.length()) {
       return true;
     }
     return false;
   }
 
-  public static boolean isEquivalent(String first, String second) {
+  private boolean isEquivalent(String first, String second) {
     String convertedFirst = convertStringToExpression(first);
     String convertedSecond = convertStringToExpression(second);
     if (checkSameLength(first, second) && convertedFirst.equals(convertedSecond)) {

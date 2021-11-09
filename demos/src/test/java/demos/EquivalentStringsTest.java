@@ -7,49 +7,61 @@ import org.junit.jupiter.api.Test;
 class EquivalentStringsTest {
   @Test
   public void testCocoonAndZyzyyx() {
-    EquivalentStrings test = new EquivalentStrings();
-    test.main(new String[] {"cocoon", "zyzyyx"});
+    String[] testStrings = new String[] {"cocoon", "zyzyyx"};
+    EquivalentStrings test = new EquivalentStrings(testStrings);
+    test.main(testStrings);
 
-    assertEquals("equivalent", test.message);
+    assertEquals("equivalent", test.checkIfWorks(testStrings));
   }
 
   @Test
   public void testBananaAndOrange() {
-    EquivalentStrings test = new EquivalentStrings();
-    test.main(new String[] {"banana", "orange"});
+    String[] testStrings = new String[] {"banana", "orange"};
+    EquivalentStrings test = new EquivalentStrings(testStrings);
+    test.main(testStrings);
 
-    assertEquals("not equivalent", test.message);
+    assertEquals("not equivalent", test.checkIfWorks(testStrings));
   }
 
   @Test
   public void testBongoAndDrum() {
-    EquivalentStrings test = new EquivalentStrings();
-    test.main(new String[] {"bongo", "drum"});
+    String[] testStrings = new String[] {"bongo", "drum"};
+    EquivalentStrings test = new EquivalentStrings(testStrings);
+    test.main(testStrings);
 
-    assertEquals("not equivalent", test.message);
+    assertEquals("not equivalent", test.checkIfWorks(testStrings));
   }
 
   @Test
   public void testNoArguments() {
-    EquivalentStrings test = new EquivalentStrings();
-    test.main(new String[] {});
+    String[] testStrings = new String[] {};
+    EquivalentStrings test = new EquivalentStrings(testStrings);
+    test.main(testStrings);
 
-    assertEquals("EquivalentStrings error: the argument string1 is required", test.error);
+    assertEquals(
+        "EquivalentStrings error: the argument string1 is required",
+        test.checkIfWorks(testStrings));
   }
 
   @Test
   public void testTooFewArguments() {
-    EquivalentStrings test = new EquivalentStrings();
-    test.main(new String[] {"abc"});
+    String[] testStrings = new String[] {"abc"};
+    EquivalentStrings test = new EquivalentStrings(testStrings);
+    test.main(testStrings);
 
-    assertEquals("EquivalentStrings error: the argument string2 is required", test.error);
+    assertEquals(
+        "EquivalentStrings error: the argument string2 is required",
+        test.checkIfWorks(testStrings));
   }
 
   @Test
   public void testTooManyArguments() {
-    EquivalentStrings test = new EquivalentStrings();
-    test.main(new String[] {"applebees", "bar", "and", "grill"});
+    String[] testStrings = new String[] {"applebees", "bar", "and", "grill"};
+    EquivalentStrings test = new EquivalentStrings(testStrings);
+    test.main(testStrings);
 
-    assertEquals("EquivalentStrings error: the value and matches no argument", test.error);
+    assertEquals(
+        "EquivalentStrings error: the value and matches no argument",
+        test.checkIfWorks(testStrings));
   }
 }

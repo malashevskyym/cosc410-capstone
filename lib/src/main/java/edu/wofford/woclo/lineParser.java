@@ -4,7 +4,9 @@ import java.util.*;
 
 public class LineParser {
   Map<String, Argument> arguments = new HashMap<String, Argument>();
-  List<String> argsPosition = new ArrayList<String>();
+  List<String> argumentNameByPosition = new ArrayList<String>();
+  private List<String> required = new ArrayList<String>();
+  private List<String> optional = new ArrayList<String>();
   String useInfo;
 
   /** Represents data types. */
@@ -53,7 +55,7 @@ public class LineParser {
    */
   public void addRequiredArgument(String name, Datatype type) {
     arguments.put(name, new Argument(type));
-    argsPosition.add(name);
+    argumentNameByPosition.add(name);
   }
 
   /**
@@ -66,7 +68,7 @@ public class LineParser {
    */
   public void addRequiredArgument(String name, Datatype type, String help) {
     arguments.put(name, new Argument(type, help));
-    argsPosition.add(name);
+    argumentNameByPosition.add(name);
   }
 
   /**
@@ -118,9 +120,86 @@ public class LineParser {
    * @param identifer The key for the desired argument.
    * @return The argument parsed to its type.
    */
+  @SuppressWarnings("unchecked")
   public <T> T getArgument(String identifier) {
     String value = arguments.get(identifier).value;
     return (T) arguments.get(identifier).type.parseType(value);
+  }
+
+  /**
+   * Checks that the arguments passed into the command line match with the arguments that have been
+   * added.
+   *
+   * @param args The command line arguments.
+   */
+  private void checkArgumentsForErrors(String[] args) {
+    // TODO: Make sure that second conditional works correctly, or if it is my code in Equivalent
+    // Strings that needs changing.
+
+    // Check that the correct amount of required arguments were passed.
+    if (required.size() > argumentNameByPosition.size()) {
+      String excess = required.get(argumentNameByPosition.size());
+      throw new IllegalArgumentException("the value " + excess + " matches no argument");
+    }
+    if (required.size() < argumentNameByPosition.size()) {
+      String excess = argumentNameByPosition.get(required.size());
+      throw new IllegalArgumentException("the argument " + excess + " is required");
+    }
+
+    // Check that optional arguments have a value.
+    for (int i = 0; i < args.length; i++) {
+      if (args[i].substring(0, 1).equals("-")) {
+        if (i == args.length - 1 || args[i + 1].substring(0, 1).equals("-")) {
+          throw new IllegalArgumentException("no value for " + args[i]);
+        }
+      }
+    }
+
+    // TODO: Make sure that user does not pass in named/optional arguments that DO NOT exist.
+  }
+
+  /**
+   * Builds the required list and optional list.
+   *
+   * @param args The arguments passed in at the command line.
+   */
+  private void buildArgumentLists(String[] args) {
+
+    for (int i = 0; i < args.length; i++) {
+      if (args[i].substring(0, 1).equals("-")) {
+        optional.add(args[i]);
+        optional.add(args[i + 1]);
+        i++;
+      } else {
+        required.add(args[i]);
+      }
+    }
+
+    checkArgumentsForErrors(args);
+  }
+
+  /**
+   * Checks that the arguments passed into the command line can be parsed into their specified
+   * types.
+   */
+  private void checkArgumentsForTypeEquivalence() {
+    for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
+      String value = entry.getValue().getValue();
+      Datatype type = entry.getValue().type;
+      if (type == Datatype.FLOAT) {
+        try {
+          Float.parseFloat(value);
+        } catch (NumberFormatException e) {
+          throw new IllegalArgumentException("the value " + value + " is not of type float");
+        }
+      } else if (type == Datatype.INTEGER) {
+        try {
+          Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+          throw new IllegalArgumentException("the value " + value + " is not of type integer");
+        }
+      }
+    }
   }
 
   /**
@@ -132,91 +211,22 @@ public class LineParser {
    * @param args String array representation of command line values.
    */
   public void parse(String[] args) {
-    List<String> optionals = new ArrayList<String>();
-    List<String> required = new ArrayList<String>();
     String helpMessage = constructHelpMessage();
     if (detectHelp(args)) {
       System.out.println(helpMessage);
     } else {
-      // Create required list
-      for (int i = 0; i < args.length; i++) {
-        required.add(args[i]);
-      }
+      buildArgumentLists(args);
 
-      // Create optionals list
       for (int i = 0; i < required.size(); i++) {
+        arguments.get(argumentNameByPosition.get(i)).setValue(required.get(i));
+      }
 
-        if (required.get(i).substring(0, 1).equals("-")) {
-
-          if (required.get(i).substring(1, 2).equals("-")) {
-            if ((i == required.size() - 1)
-                || (required.get(i + 1).substring(0, 1).equals("-")
-                    && required.get(i + 1).substring(1, 2).equals("-"))) {
-              throw new IllegalArgumentException("no value for " + required.get(i));
-            }
-
-            optionals.add(args[i]);
-            optionals.add(args[i + 1]);
-            required.remove(i);
-            required.remove(i);
-          }
+      for (int i = 0; i < optional.size(); i++) {
+        if (optional.get(i).substring(0, 1).equals("-")) {
+          arguments.get(optional.get(i).substring(2)).setValue(optional.get(i + 1));
         }
       }
-      // Check for too many or too few arguments
-      if (required.size() > argsPosition.size()) {
-        String excess = required.get(argsPosition.size());
-        throw new IllegalArgumentException("the value " + excess + " matches no argument");
-      }
-      if (required.size() < argsPosition.size()) {
-        String excess = argsPosition.get(required.size());
-        throw new IllegalArgumentException("the argument " + excess + " is required");
-      }
-      // Store required values
-      for (int i = 0; i < required.size(); i++) {
-        if (arguments.get(argsPosition.get(i)).type == Datatype.FLOAT) {
-          try {
-            Float.parseFloat(required.get(i));
-          } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(
-                "the value " + required.get(i) + " is not of type float");
-          }
-
-        } else if (arguments.get(argsPosition.get(i)).type == Datatype.INTEGER) {
-
-          try {
-            Integer.parseInt(required.get(i));
-          } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(
-                "the value " + required.get(i) + " is not of type integer");
-          }
-        }
-        arguments.get(argsPosition.get(i)).setValue(required.get(i));
-      }
-      // Store optional values
-      for (int i = 0; i < optionals.size(); i++) {
-        if (optionals.get(i).substring(0, 1).equals("-")) {
-          if (optionals.get(i).substring(1, 2).equals("-")) {
-            if (arguments.get(optionals.get(i)).type == Datatype.FLOAT) {
-              try {
-                Float.parseFloat(optionals.get(i + 1));
-              } catch (NumberFormatException e) {
-                throw new IllegalArgumentException(
-                    "the value " + optionals.get(i) + " is not of type float");
-              }
-
-            } else if (arguments.get(optionals.get(i)).type == Datatype.INTEGER) {
-
-              try {
-                Integer.parseInt(optionals.get(i + 1));
-              } catch (NumberFormatException e) {
-                throw new IllegalArgumentException(
-                    "the value " + optionals.get(i) + " is not of type integer");
-              }
-            }
-            arguments.get(optionals.get(i).substring(2)).setValue(optionals.get(i + 1));
-          }
-        }
-      }
+      checkArgumentsForTypeEquivalence();
     }
   }
 
