@@ -13,9 +13,8 @@ public class OverlappingRectangles {
   int overlapArea = 0;
 
   public static void main(String... args) {
-    LineParser parse =
-        new LineParser(
-            "java OverlappingRectangles [-h] x1 y1 x2 y2 x3 y3 x4 y4\n\nDetermine the overlap and total area of two rectangles.");
+    LineParser parse = new LineParser(
+        "java OverlappingRectangles [-h] x1 y1 x2 y2 x3 y3 x4 y4\n\nDetermine the overlap and total area of two rectangles.");
     parse.addRequiredArgument("x1", Datatype.INTEGER, "lower-left x for rectangle 1");
     parse.addRequiredArgument("y1", Datatype.INTEGER, "lower-left y for rectangle 1");
     parse.addRequiredArgument("x2", Datatype.INTEGER, "upper-right x for rectangle 1");
@@ -27,21 +26,16 @@ public class OverlappingRectangles {
 
     try {
       parse.parse(args);
-      Integer[] values =
-          new Integer[] {
-            parse.getArgument("x1"),
-            parse.getArgument("y1"),
-            parse.getArgument("x2"),
-            parse.getArgument("y2"),
-            parse.getArgument("x3"),
-            parse.getArgument("y3"),
-            parse.getArgument("x4"),
-            parse.getArgument("y4")
-          };
+      if (parse.detectHelp(args) == false) {
 
-      OverlappingRectangles Rectangles = new OverlappingRectangles(values);
+        Integer[] values = new Integer[] { parse.getArgument("x1"), parse.getArgument("y1"), parse.getArgument("x2"),
+            parse.getArgument("y2"), parse.getArgument("x3"), parse.getArgument("y3"), parse.getArgument("x4"),
+            parse.getArgument("y4") };
 
-      System.out.println(Rectangles.overlapArea + " " + Rectangles.totalArea);
+        OverlappingRectangles Rectangles = new OverlappingRectangles(values);
+
+        System.out.println(Rectangles.overlapArea + " " + Rectangles.totalArea);
+      }
     } catch (Exception e) {
       System.out.println("OverlappingRectangles error: " + e.getMessage());
     }
@@ -76,14 +70,7 @@ public class OverlappingRectangles {
   }
 
   // Get overlap area
-  private Integer getOverlap(
-      Integer x1,
-      Integer y1,
-      Integer x2,
-      Integer y2,
-      Integer x3,
-      Integer y3,
-      Integer x4,
+  private Integer getOverlap(Integer x1, Integer y1, Integer x2, Integer y2, Integer x3, Integer y3, Integer x4,
       Integer y4) {
     int overlap = 0;
 

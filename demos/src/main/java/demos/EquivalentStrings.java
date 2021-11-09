@@ -4,12 +4,11 @@ import edu.wofford.woclo.*;
 import java.util.LinkedHashSet;
 
 public class EquivalentStrings {
-  public static String message = "";
-  public static String error = "";
+  static String message = "";
+  static String error = "";
 
   public static void main(String... args) {
-    String helpMessage =
-        "java EquivalentStrings [-h] string1 string2\n\nDetermine if two strings are equivalent.";
+    String helpMessage = "java EquivalentStrings [-h] string1 string2\n\nDetermine if two strings are equivalent.";
     LineParser parser = new LineParser(helpMessage);
     parser.addRequiredArgument("string1", LineParser.Datatype.STRING, "the first string");
     parser.addRequiredArgument("string2", LineParser.Datatype.STRING, "the second string");
@@ -18,12 +17,14 @@ public class EquivalentStrings {
       parser.parse(args);
       String stringOne = parser.getArgument("string1");
       String stringTwo = parser.getArgument("string2");
-      if (isEquivalent(stringOne, stringTwo)) {
-        message = "equivalent";
-        System.out.println(message);
-      } else {
-        message = "not equivalent";
-        System.out.println(message);
+      if (parser.detectHelp(args) == false) {
+        if (isEquivalent(stringOne, stringTwo)) {
+          message = "equivalent";
+          System.out.println(message);
+        } else {
+          message = "not equivalent";
+          System.out.println(message);
+        }
       }
     } catch (Exception e) {
       error = "EquivalentStrings error: " + e.getMessage();
@@ -31,7 +32,8 @@ public class EquivalentStrings {
     }
   }
 
-  public EquivalentStrings() {}
+  public EquivalentStrings() {
+  }
 
   private static String convertStringToExpression(String s) {
     String expression = s;

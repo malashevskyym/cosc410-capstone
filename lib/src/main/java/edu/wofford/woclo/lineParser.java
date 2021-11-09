@@ -5,7 +5,7 @@ import java.util.*;
 public class LineParser {
   Map<String, Argument> arguments = new HashMap<String, Argument>();
   List<String> argsPosition = new ArrayList<String>();
-  String useInfo;
+  private String useInfo = "";
 
   /** Represents data types. */
   public enum Datatype {
@@ -115,7 +115,7 @@ public class LineParser {
   /**
    * Parses the desired argument to its type and returns the value as that type.
    *
-   * @param identifer The key for the desired argument.
+   * @param identifier identifer The key for the desired argument.
    * @return The argument parsed to its type.
    */
   public <T> T getArgument(String identifier) {
@@ -135,9 +135,9 @@ public class LineParser {
   public void parse(String[] args) {
     List<String> optionals = new ArrayList<String>();
     List<String> required = new ArrayList<String>();
-    String helpMessage = constructHelpMessage();
+    // String helpMessage = constructHelpMessage();
     if (detectHelp(args)) {
-      System.out.println(helpMessage);
+      System.out.println(useInfo);
     } else {
       // Create required list
       for (int i = 0; i < args.length; i++) {
@@ -150,10 +150,6 @@ public class LineParser {
         if (required.get(i).substring(0, 1).equals("-")) {
 
           if (required.get(i).substring(1, 2).equals("-")) {
-            if ((i == required.size() - 1) || (required.get(i + 1).substring(0, 1).equals("-")
-                && required.get(i + 1).substring(1, 2).equals("-"))) {
-              throw new IllegalArgumentException("no value for " + required.get(i));
-            }
 
             optionals.add(args[i]);
             optionals.add(args[i + 1]);
@@ -195,20 +191,24 @@ public class LineParser {
       for (int i = 0; i < optionals.size(); i++) {
         if (optionals.get(i).substring(0, 1).equals("-")) {
           if (optionals.get(i).substring(1, 2).equals("-")) {
-            if (arguments.get(optionals.get(i)).type == Datatype.FLOAT) {
+            if (arguments.get(optionals.get(i).substring(2)).type == Datatype.FLOAT) {
               try {
                 Float.parseFloat(optionals.get(i + 1));
               } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("the value " + optionals.get(i) + " is not of type float");
               }
 
-            } else if (arguments.get(optionals.get(i)).type == Datatype.INTEGER) {
+            } else if (arguments.get(optionals.get(i).substring(2)).type == Datatype.INTEGER) {
 
               try {
                 Integer.parseInt(optionals.get(i + 1));
               } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("the value " + optionals.get(i) + " is not of type integer");
               }
+            }
+            if ((i == required.size() - 1) || (required.get(i + 1).substring(0, 1).equals("-")
+                && required.get(i + 1).substring(1, 2).equals("-"))) {
+              throw new IllegalArgumentException("no value for " + required.get(i).substring(2));
             }
             arguments.get(optionals.get(i).substring(2)).setValue(optionals.get(i + 1));
           }
@@ -222,30 +222,26 @@ public class LineParser {
    *
    * @return A string containing usage information.
    */
-  private String constructHelpMessage() {
-    String helpMessage = "";
-
-    helpMessage += "usage: ";
-    helpMessage += useInfo + "\n\npositional arguments:\n";
-    StringBuffer buf = new StringBuffer();
-    for (int i = 0; i < argsPosition.size(); i++) {
-
-      if (arguments.get(argsPosition.get(i)).type == Datatype.INTEGER) {
-        buf.append(" " + argsPosition.get(i) + "          " + "(integer)" + "     "
-            + arguments.get(argsPosition.get(i)).help + "\n");
-      } else if (arguments.get(argsPosition.get(i)).type == Datatype.FLOAT) {
-        buf.append(" " + argsPosition.get(i) + "          " + "(float)" + "     "
-            + arguments.get(argsPosition.get(i)).help + "\n");
-      } else if (arguments.get(argsPosition.get(i)).type == Datatype.STRING) {
-        buf.append(" " + argsPosition.get(i) + "          " + "(STRING)" + "     "
-            + arguments.get(argsPosition.get(i)).help + "\n");
-        ;
-      }
-    }
-    helpMessage += buf + "\n";
-    helpMessage += "named arguments:\n -h, --help  show this help message and exit";
-    return helpMessage;
-  }
+  /*
+   * private String constructHelpMessage() { String helpMessage = "";
+   *
+   * helpMessage += "usage: "; helpMessage += useInfo +
+   * "\n\npositional arguments:\n"; StringBuffer buf = new StringBuffer(); for
+   * (int i = 0; i < argsPosition.size(); i++) {
+   *
+   * if (arguments.get(argsPosition.get(i)).type == Datatype.INTEGER) {
+   * buf.append( " " + argsPosition.get(i) + "          " + "(integer)" + "     "
+   * + arguments.get(argsPosition.get(i)).help + "\n"); } else if
+   * (arguments.get(argsPosition.get(i)).type == Datatype.FLOAT) { buf.append( " "
+   * + argsPosition.get(i) + "          " + "(float)" + "     " +
+   * arguments.get(argsPosition.get(i)).help + "\n"); } else if
+   * (arguments.get(argsPosition.get(i)).type == Datatype.STRING) { buf.append(
+   * " " + argsPosition.get(i) + "          " + "(string)" + "     " +
+   * arguments.get(argsPosition.get(i)).help + "\n"); ; } } helpMessage += buf +
+   * "\n"; helpMessage +=
+   * "named arguments:\n -h, --help  show this help message and exit"; return
+   * helpMessage; }
+   */
 
   /**
    * Detects a help command in the command line.
