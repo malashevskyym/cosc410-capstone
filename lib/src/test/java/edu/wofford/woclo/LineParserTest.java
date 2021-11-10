@@ -102,6 +102,21 @@ public class LineParserTest {
   }
 
   @Test
+  public void testOptionalWithHelpDifferentTypes() {
+    LineParser Test = new LineParser();
+
+    Test.addRequiredArgument("X", LineParser.Datatype.FLOAT, "Length");
+    Test.addRequiredArgument("Y", LineParser.Datatype.STRING, "Width");
+    Test.addRequiredArgument("Z", LineParser.Datatype.INTEGER, "Height");
+    Test.addOptionalArgument("type", LineParser.Datatype.INTEGER, "Box");
+    Test.addOptionalArgument("box", LineParser.Datatype.FLOAT, "Box");
+
+    String[] test1 = new String[] {"2", "4", "7", "--type", "box", "--help"};
+    Test.parse(test1);
+    assertTrue(Test.detectHelp(test1));
+  }
+
+  @Test
   public void testOptionalWithDashH() {
     LineParser Test = new LineParser();
 
@@ -140,6 +155,38 @@ public class LineParserTest {
     Test.addOptionalArgument("type", LineParser.Datatype.STRING, "Box");
 
     String[] test1 = new String[] {"2", "4", "--type", "box"};
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          Test.parse(test1);
+        });
+  }
+
+  @Test
+  public void testDoubleDashAfterNamed() {
+    LineParser Test = new LineParser();
+    Test.addRequiredArgument("X", LineParser.Datatype.INTEGER, "Length");
+    Test.addRequiredArgument("Y", LineParser.Datatype.INTEGER, "Width");
+    Test.addRequiredArgument("Z", LineParser.Datatype.INTEGER, "Height");
+    Test.addOptionalArgument("type", LineParser.Datatype.STRING, "Box");
+
+    String[] test1 = new String[] {"2", "4", "--type", "--box"};
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          Test.parse(test1);
+        });
+  }
+
+  @Test
+  public void testOptionalNoValue() {
+    LineParser Test = new LineParser();
+    Test.addRequiredArgument("X", LineParser.Datatype.INTEGER, "Length");
+    Test.addRequiredArgument("Y", LineParser.Datatype.INTEGER, "Width");
+    Test.addRequiredArgument("Z", LineParser.Datatype.INTEGER, "Height");
+    Test.addOptionalArgument("type", LineParser.Datatype.STRING, "Box");
+
+    String[] test1 = new String[] {"2", "4", "6", "--type"};
     Assertions.assertThrows(
         IllegalArgumentException.class,
         () -> {

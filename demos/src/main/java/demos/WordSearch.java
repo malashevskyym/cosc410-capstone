@@ -16,8 +16,7 @@ public class WordSearch {
   String coordinatesString = "";
   String grid;
 
-  public WordSearch() {
-  }
+  public WordSearch() {}
 
   public void setHeight(int height) {
     this.height = height;
@@ -63,7 +62,8 @@ public class WordSearch {
   private void findFirstLetter(int Iindex, int Tindex) {
     wordBuild = "";
     coordinates.clear();
-    outerloop: for (int i = Iindex; i < height; i++) {
+    outerloop:
+    for (int i = Iindex; i < height; i++) {
       if (i > Iindex) {
         Tindex = 0;
       }
@@ -163,24 +163,33 @@ public class WordSearch {
   }
 
   public static void main(String[] args) {
-    LineParser testLine = new LineParser(
-        "java WordSearch [-h] [--width WIDTH] [--height HEIGHT] grid target\n\nFind a target word in a grid.");
+    LineParser testLine =
+        new LineParser(
+            "java WordSearch [-h] [--width WIDTH] [--height HEIGHT] grid target",
+            "Find a target word in a grid.");
     testLine.addRequiredArgument("grid", LineParser.Datatype.STRING, "the grid to search");
     testLine.addRequiredArgument("target", LineParser.Datatype.STRING, "the target word");
-    testLine.addOptionalArgument("width", LineParser.Datatype.INTEGER, "5");
-    testLine.addOptionalArgument("height", LineParser.Datatype.INTEGER, "5");
+    testLine.addOptionalArgument("WIDTH", LineParser.Datatype.INTEGER, "the grid width", "5");
+    testLine.addOptionalArgument("HEIGHT", LineParser.Datatype.INTEGER, "the grid height", "5");
     try {
       testLine.parse(args);
       WordSearch test = new WordSearch();
-      test.setHeight(testLine.getArgument("height"));
-      test.setWidth(testLine.getArgument("width"));
+      test.setHeight(testLine.getArgument("HEIGHT"));
+      test.setWidth(testLine.getArgument("WIDTH"));
       test.setBoard(testLine.getArgument("grid"));
       test.setWord(testLine.getArgument("target"));
       test.findWord();
       String wordResult = test.getFoundCoordinate();
       if (test.getHeight() * test.getWidth() != test.getGrid().length()) {
-        System.out.println("WordSearch error: " + "grid dimensions (" + test.getWidth() + " x " + test.getHeight()
-            + ") do not match grid length (" + test.getGrid().length() + ")");
+        System.out.println(
+            "WordSearch error: "
+                + "grid dimensions ("
+                + test.getWidth()
+                + " x "
+                + test.getHeight()
+                + ") do not match grid length ("
+                + test.getGrid().length()
+                + ")");
       } else {
         System.out.println(wordResult);
       }

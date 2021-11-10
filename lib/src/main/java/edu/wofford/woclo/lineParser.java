@@ -5,8 +5,6 @@ import java.util.*;
 public class LineParser {
   Map<String, Argument> arguments = new HashMap<String, Argument>();
   List<String> argumentNameByPosition = new ArrayList<String>();
-  private List<String> required = new ArrayList<String>();
-  private List<String> optional = new ArrayList<String>();
   String usageInfo;
   String programInfo;
 
@@ -138,76 +136,25 @@ public class LineParser {
     return (T) arguments.get(identifier).type.parseType(value);
   }
 
-  /**
-   * Checks that the arguments passed into the command line match with the arguments that have been
-   * added.
-   *
-   * @param args The command line arguments.
-   */
-  private void checkArgumentsForErrors(String[] args) {
-
-    // Check that the correct amount of required arguments were passed.
-    if (required.size() > argumentNameByPosition.size()) {
-      String excess = required.get(argumentNameByPosition.size());
-      throw new IllegalArgumentException("the value " + excess + " matches no argument");
-    }
-    if (required.size() < argumentNameByPosition.size()) {
-      String excess = argumentNameByPosition.get(required.size());
-      throw new IllegalArgumentException("the argument " + excess + " is required");
-    }
-
-    // Check that optional arguments have a value.
-    for (int i = 0; i < args.length; i++) {
-      if (args[i].substring(0, 1).equals("-")) {
-        if (i == args.length - 1 || args[i + 1].substring(0, 1).equals("-")) {
-          throw new IllegalArgumentException("no value for " + args[i]);
-        }
-      }
-    }
-
-    // TODO: Make sure that user does not pass in named/optional arguments that DO NOT exist.
-  }
-
-  /**
-   * Builds the required list and optional list.
-   *
-   * @param args The arguments passed in at the command line.
-   */
-  private void buildArgumentLists(String[] args) {
-
-    for (int i = 0; i < args.length; i++) {
-      if (args[i].substring(0, 1).equals("-")) {
-        optional.add(args[i]);
-        optional.add(args[i + 1]);
-        i++;
-      } else {
-        required.add(args[i]);
-      }
-    }
-
-    checkArgumentsForErrors(args);
-  }
+  // TODO: Make sure that user does not pass in named/optional arguments that DO
+  // NOT exist.
 
   /**
    * Checks that the arguments passed into the command line can be parsed into their specified
    * types.
    */
-  private void checkArgumentsForTypeEquivalence() {
-    for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
-      String value = entry.getValue().getValue();
-      Datatype type = entry.getValue().type;
-      if (type == Datatype.FLOAT) {
-        try {
-          Float.parseFloat(value);
-        } catch (NumberFormatException e) {
-          throw new IllegalArgumentException("the value " + value + " is not of type float");
-        }
-      } else if (type == Datatype.INTEGER) {
-        try {
-          Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-          throw new IllegalArgumentException("the value " + value + " is not of type integer");
-        }
+  private void checkArgumentsForTypeEquivalence(Datatype type, String value) {
+    if (type == Datatype.FLOAT) {
+      try {
+        Float.parseFloat(value);
+      } catch (NumberFormatException e) {
+        throw new IllegalArgumentException("the value " + value + " is not of type float");
+      }
+    } else if (type == Datatype.INTEGER) {
+      try {
+        Integer.parseInt(value);
+      } catch (NumberFormatException e) {
+        throw new IllegalArgumentException("the value " + value + " is not of type integer");
       }
     }
   }
@@ -224,17 +171,44 @@ public class LineParser {
     if (detectHelp(args)) {
       System.out.println(constructHelpMessage());
     } else {
-      buildArgumentLists(args);
-      for (int i = 0; i < required.size(); i++) {
-        arguments.get(argumentNameByPosition.get(i)).setValue(required.get(i));
-      }
+      Queue<String> q = new LinkedList<>(Arrays.asList(args));
+      System.out.println(q);
+      int position = 0;
+      // While this queue has things in it.
+      while (q.isEmpty() == false) {
+        String current = q.remove();
 
-      for (int i = 0; i < optional.size(); i++) {
-        if (optional.get(i).substring(0, 1).equals("-")) {
-          arguments.get(optional.get(i).substring(2)).setValue(optional.get(i + 1));
+        // If it is named
+        if (current.substring(0, 1).equals("-")
+            && arguments.keySet().contains(current.substring(2))) {
+          String value = q.peek();
+          Datatype type = arguments.get(current.substring(2)).type;
+          checkArgumentsForTypeEquivalence(type, value);
+          if (q.peek() == null
+              || (q.peek().substring(0, 1).equals("-")
+                  && arguments.keySet().contains(q.peek().substring(2)))) {
+            throw new IllegalArgumentException("no value for " + current);
+          }
+          arguments.get(current.substring(2)).setValue(value);
+          q.remove();
+
+          // If it is required
+        } else {
+          if (position > argumentNameByPosition.size() - 1) {
+            String excess = current;
+            throw new IllegalArgumentException("the value " + excess + " matches no argument");
+          }
+          Datatype type = arguments.get(argumentNameByPosition.get(position)).type;
+          String value = current;
+          checkArgumentsForTypeEquivalence(type, value);
+          arguments.get(argumentNameByPosition.get(position)).setValue(current);
+          position++;
         }
       }
-      checkArgumentsForTypeEquivalence();
+      if (argumentNameByPosition.size() - 1 >= position) {
+        throw new IllegalArgumentException(
+            "the argument " + argumentNameByPosition.get(position) + " is required");
+      }
     }
   }
 
@@ -243,14 +217,31 @@ public class LineParser {
    *
    * @return A string containing usage information.
    */
+  // If you enjoy your sanity don't touch this function.
   private String constructHelpMessage() {
-    String helpMessage = usageInfo + "\n\n" + programInfo + "\n\n";
+    String helpMessage = "usage: " + usageInfo + "\n\n" + programInfo + "\n\n";
 
     StringBuffer buffer = new StringBuffer();
     helpMessage += "positional arguments:\n";
+    int largestWord = "-h, --help".length();
+    for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
+      if (argumentNameByPosition.contains(entry.getKey()) == false) {
+        String variable = "--" + entry.getKey() + " " + entry.getKey();
+        if (variable.length() > largestWord) {
+          largestWord = variable.length();
+        }
+      } else {
+        String variable = entry.getKey();
+        if (variable.length() > largestWord) {
+          largestWord = variable.length();
+        }
+      }
+    }
+    int spaces = 0;
+    // Old code below
     for (int i = 0; i < argumentNameByPosition.size(); i++) {
+      spaces = largestWord + 2;
       // 18 spaces + 14 spaces + argument help message
-      int spaces = 12;
       spaces = spaces - argumentNameByPosition.get(i).length();
       buffer.append(" " + argumentNameByPosition.get(i));
       for (int j = 0; j < spaces; j++) {
@@ -266,6 +257,7 @@ public class LineParser {
       } else if (arguments.get(argumentNameByPosition.get(i)).type == Datatype.FLOAT) {
         type = "(float)";
       }
+      buffer.append(type);
       spaces = spaces - type.length();
       for (int j = 0; j < spaces; j++) {
         buffer.append(" ");
@@ -275,35 +267,39 @@ public class LineParser {
     }
     helpMessage += buffer;
     buffer.delete(0, buffer.length());
+    helpMessage += "\nnamed arguments:\n -h, --help  show this help message and exit";
 
-    helpMessage += "named arguments:\n -h, --help       show this help message and exit";
-    for (int i = 0; i < optional.size(); i++) {
-      // 18 spaces + 14 spaces + argument help message + (default: value)       (except for
+    for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
+      // 18 spaces + 14 spaces + argument help message + (default: value) (except for
       // -h/--help)
-      int spaces = 12;
-      spaces = spaces - optional.get(i).length();
-      buffer.append("\n " + optional.get(i));
-      for (int j = 0; j < spaces; j++) {
-        buffer.append(" ");
-      }
+      if (argumentNameByPosition.contains(entry.getKey()) == false) {
+        spaces = largestWord + 2;
+        String variable = "--" + entry.getKey() + " " + entry.getKey();
+        buffer.append("\n ");
+        buffer.append(variable);
+        spaces = spaces - variable.length();
+        for (int j = 0; j < spaces; j++) {
+          buffer.append(" ");
+        }
 
-      spaces = 14;
-      String type = "";
-      if (arguments.get(optional.get(i)).type == Datatype.STRING) {
-        type = "(string)";
-      } else if (arguments.get(optional.get(i)).type == Datatype.INTEGER) {
-        type = "(integer)";
-      } else if (arguments.get(optional.get(i)).type == Datatype.FLOAT) {
-        type = "(float)";
-      }
-      spaces = spaces - type.length();
-      for (int j = 0; j < spaces; j++) {
-        buffer.append(" ");
-      }
+        spaces = 14;
+        String type = "";
+        if (arguments.get(entry.getKey()).type == Datatype.STRING) {
+          type = "(string)";
+        } else if (arguments.get(entry.getKey()).type == Datatype.INTEGER) {
+          type = "(integer)";
+        } else if (arguments.get(entry.getKey()).type == Datatype.FLOAT) {
+          type = "(float)";
+        }
+        buffer.append(type);
+        spaces = spaces - type.length();
+        for (int j = 0; j < spaces; j++) {
+          buffer.append(" ");
+        }
 
-      buffer.append(arguments.get(argumentNameByPosition.get(i)).help + " ");
-      buffer.append("(default: " + arguments.get(argumentNameByPosition.get(i)).getValue() + ")");
-      i++;
+        buffer.append(arguments.get(entry.getKey()).value + " ");
+        buffer.append("(default: " + arguments.get(entry.getKey()).help + ")");
+      }
     }
     helpMessage += buffer;
 
