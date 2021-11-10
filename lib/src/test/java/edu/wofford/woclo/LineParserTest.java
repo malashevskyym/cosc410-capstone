@@ -96,7 +96,7 @@ public class LineParserTest {
     Test.addRequiredArgument("Z", LineParser.Datatype.INTEGER, "Height");
     Test.addOptionalArgument("type", LineParser.Datatype.STRING, "Box");
 
-    String[] test1 = new String[] {"2", " 4", "7", "--type", "box", "--help"};
+    String[] test1 = new String[] {"2", "4", "7", "--type", "box", "--help"};
     Test.parse(test1);
     assertTrue(Test.detectHelp(test1));
   }
@@ -110,7 +110,7 @@ public class LineParserTest {
     Test.addRequiredArgument("Z", LineParser.Datatype.INTEGER, "Height");
     Test.addOptionalArgument("type", LineParser.Datatype.STRING, "Box");
 
-    String[] test1 = new String[] {"2", " 4", "7", "--type", "box", "-h"};
+    String[] test1 = new String[] {"2", "4", "7", "--type", "box", "-h"};
     Test.parse(test1);
     assertTrue(Test.detectHelp(test1));
   }

@@ -7,11 +7,14 @@ public class LineParser {
   List<String> argumentNameByPosition = new ArrayList<String>();
   private List<String> required = new ArrayList<String>();
   private List<String> optional = new ArrayList<String>();
-  String useInfo;
+  String usageInfo;
+  String programInfo;
 
   /** Represents data types. */
   public enum Datatype {
-    STRING("STRING"), INTEGER("INT"), FLOAT("FLOAT");
+    STRING("STRING"),
+    INTEGER("INT"),
+    FLOAT("FLOAT");
 
     public final String label;
 
@@ -22,32 +25,42 @@ public class LineParser {
     @SuppressWarnings("unchecked")
     public <T> T parseType(String value) {
       switch (this) {
-      case INTEGER:
-        return (T) Integer.valueOf(value);
-      case FLOAT:
-        return (T) Float.valueOf(value);
-      default:
-        return (T) value;
+        case INTEGER:
+          return (T) Integer.valueOf(value);
+        case FLOAT:
+          return (T) Float.valueOf(value);
+        default:
+          return (T) value;
       }
     }
   };
 
   /** Constructs an empty map of named arguments. */
-  public LineParser() {
-  };
+  public LineParser() {};
 
   /**
    * Constructs an empty map of named arguments.
    *
-   * @param useInfo This variable is for usage information about the program.
+   * @param usageInfo This is for usage information about the program.
    */
-  public LineParser(String useInfo) {
-    this.useInfo = useInfo;
+  public LineParser(String usageInfo) {
+    this(usageInfo, "");
   }
 
   /**
-   * Specify an argument to come through the command line. Adds the argument to
-   * the argument map, declaring a type.
+   * Constructs an empty map of named arguments.
+   *
+   * @param usageInfo This is for usage information about the program.
+   * @param programInfo This is for the program's description.
+   */
+  public LineParser(String usageInfo, String programInfo) {
+    this.usageInfo = usageInfo;
+    this.programInfo = programInfo;
+  }
+
+  /**
+   * Specify an argument to come through the command line. Adds the argument to the argument map,
+   * declaring a type.
    *
    * @param name The name of the argument (what its called).
    * @param type The data type of the argument (float, int, or string).
@@ -58,8 +71,8 @@ public class LineParser {
   }
 
   /**
-   * Specify an argument to come through the command line. Adds the argument to
-   * the argument map, declaring a type.
+   * Specify an argument to come through the command line. Adds the argument to the argument map,
+   * declaring a type.
    *
    * @param name The name of the argument (what its called).
    * @param type The data type of the argument (float, int, or string).
@@ -73,8 +86,8 @@ public class LineParser {
   /**
    * Request an argument that will be optional in the command line.
    *
-   * @param name         The name of the argument (what its called).
-   * @param type         The data type of the argument (float, int, or string).
+   * @param name The name of the argument (what its called).
+   * @param type The data type of the argument (float, int, or string).
    * @param defaultValue The default value for the optional parameter.
    */
   public void addOptionalArgument(String name, Datatype type, String defaultValue) {
@@ -85,11 +98,10 @@ public class LineParser {
   /**
    * Request an argument that will be optional in the command line.
    *
-   * @param name         The name of the argument (what its called).
-   * @param type         The data type of the argument (float, int, or string).
+   * @param name The name of the argument (what its called).
+   * @param type The data type of the argument (float, int, or string).
    * @param defaultValue The default value for the optional parameter.
-   * @param help         Any additional descriptive help information about the
-   *                     argument.
+   * @param help Any additional descriptive help information about the argument.
    */
   public void addOptionalArgument(String name, Datatype type, String defaultValue, String help) {
     arguments.put(name, new Argument(type, help));
@@ -133,8 +145,6 @@ public class LineParser {
    * @param args The command line arguments.
    */
   private void checkArgumentsForErrors(String[] args) {
-    // TODO: Make sure that second conditional works correctly, or if it is my code in Equivalent
-    // Strings that needs changing.
 
     // Check that the correct amount of required arguments were passed.
     if (required.size() > argumentNameByPosition.size()) {
@@ -211,12 +221,10 @@ public class LineParser {
    * @param args String array representation of command line values.
    */
   public void parse(String[] args) {
-    String helpMessage = constructHelpMessage();
     if (detectHelp(args)) {
-      System.out.println(useInfo);
+      System.out.println(constructHelpMessage());
     } else {
       buildArgumentLists(args);
-
       for (int i = 0; i < required.size(); i++) {
         arguments.get(argumentNameByPosition.get(i)).setValue(required.get(i));
       }
@@ -235,23 +243,72 @@ public class LineParser {
    *
    * @return A string containing usage information.
    */
-  private String constructHelpMessage() { String helpMessage = "";
-    helpMessage += "usage: ";
-    helpMessage += useInfo + "\n\npositional arguments:\n";
-    StringBuffer buf = new StringBuffer();
-    for (int i = 0; i < argsPosition.size(); i++) {
-      if (arguments.get(argsPosition.get(i)).type == Datatype.INTEGER) {
-      buf.append( " " + argsPosition.get(i) + "          " + "(integer)" + "     " + arguments.get(argsPosition.get(i)).help + "\n");
-      } else if (arguments.get(argsPosition.get(i)).type == Datatype.FLOAT) {
-        buf.append( " " + argsPosition.get(i) + "          " + "(float)" + "     " + arguments.get(argsPosition.get(i)).help + "\n");
-      } else if (arguments.get(argsPosition.get(i)).type == Datatype.STRING) {
-        buf.append(" " + argsPosition.get(i) + "          " + "(string)" + "     " + arguments.get(argsPosition.get(i)).help + "\n");
-      } 
+  private String constructHelpMessage() {
+    String helpMessage = usageInfo + "\n\n" + programInfo + "\n\n";
+
+    StringBuffer buffer = new StringBuffer();
+    helpMessage += "positional arguments:\n";
+    for (int i = 0; i < argumentNameByPosition.size(); i++) {
+      // 18 spaces + 14 spaces + argument help message
+      int spaces = 12;
+      spaces = spaces - argumentNameByPosition.get(i).length();
+      buffer.append(" " + argumentNameByPosition.get(i));
+      for (int j = 0; j < spaces; j++) {
+        buffer.append(" ");
+      }
+
+      spaces = 14;
+      String type = "";
+      if (arguments.get(argumentNameByPosition.get(i)).type == Datatype.STRING) {
+        type = "(string)";
+      } else if (arguments.get(argumentNameByPosition.get(i)).type == Datatype.INTEGER) {
+        type = "(integer)";
+      } else if (arguments.get(argumentNameByPosition.get(i)).type == Datatype.FLOAT) {
+        type = "(float)";
+      }
+      spaces = spaces - type.length();
+      for (int j = 0; j < spaces; j++) {
+        buffer.append(" ");
+      }
+
+      buffer.append(arguments.get(argumentNameByPosition.get(i)).help + "\n");
     }
-    helpMessage += buf + "\n";
-    helpMessage += "named arguments:\n -h, --help  show this help message and exit";
+    helpMessage += buffer;
+    buffer.delete(0, buffer.length());
+
+    helpMessage += "named arguments:\n -h, --help       show this help message and exit";
+    for (int i = 0; i < optional.size(); i++) {
+      // 18 spaces + 14 spaces + argument help message + (default: value)       (except for
+      // -h/--help)
+      int spaces = 12;
+      spaces = spaces - optional.get(i).length();
+      buffer.append("\n " + optional.get(i));
+      for (int j = 0; j < spaces; j++) {
+        buffer.append(" ");
+      }
+
+      spaces = 14;
+      String type = "";
+      if (arguments.get(optional.get(i)).type == Datatype.STRING) {
+        type = "(string)";
+      } else if (arguments.get(optional.get(i)).type == Datatype.INTEGER) {
+        type = "(integer)";
+      } else if (arguments.get(optional.get(i)).type == Datatype.FLOAT) {
+        type = "(float)";
+      }
+      spaces = spaces - type.length();
+      for (int j = 0; j < spaces; j++) {
+        buffer.append(" ");
+      }
+
+      buffer.append(arguments.get(argumentNameByPosition.get(i)).help + " ");
+      buffer.append("(default: " + arguments.get(argumentNameByPosition.get(i)).getValue() + ")");
+      i++;
+    }
+    helpMessage += buffer;
+
     return helpMessage;
-    }
+  }
 
   /**
    * Detects a help command in the command line.

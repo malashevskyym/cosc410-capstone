@@ -6,23 +6,26 @@ import java.util.LinkedHashSet;
 public class EquivalentStrings {
 
   public static void main(String... args) {
-    String helpMessage = "java EquivalentStrings [-h] string1 string2\n\nDetermine if two strings are equivalent.";
+    String helpMessage =
+        "java EquivalentStrings [-h] string1 string2\n\nDetermine if two strings are equivalent.";
     LineParser parser = new LineParser(helpMessage);
     parser.addRequiredArgument("string1", LineParser.Datatype.STRING, "the first string");
     parser.addRequiredArgument("string2", LineParser.Datatype.STRING, "the second string");
 
     try {
       parser.parse(args);
-      String[] values = new String[] {parser.getArgument("string1"), parser.getArgument("string2")};
-      EquivalentStrings equivalentStrings = new EquivalentStrings(values);
+      EquivalentStrings equivalentStrings =
+          new EquivalentStrings(parser.getArgument("string1"), parser.getArgument("string2"));
     } catch (Exception e) {
       System.out.println("EquivalentStrings error: " + e.getMessage());
     }
   }
 
-  public EquivalentStrings(String[] strings) {
-    String string1 = strings[0];
-    String string2 = strings[1];
+  public EquivalentStrings() {}
+
+  public EquivalentStrings(String stringOne, String stringTwo) {
+    String string1 = stringOne;
+    String string2 = stringTwo;
 
     System.out.println(checkIfEquivalent(string1, string2));
   }

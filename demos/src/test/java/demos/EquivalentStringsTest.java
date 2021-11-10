@@ -8,7 +8,7 @@ class EquivalentStringsTest {
   @Test
   public void testCocoonAndZyzyyx() {
     String[] testStrings = new String[] {"cocoon", "zyzyyx"};
-    EquivalentStrings test = new EquivalentStrings(testStrings);
+    EquivalentStrings test = new EquivalentStrings(testStrings[0], testStrings[1]);
     test.main(testStrings);
 
     assertEquals("equivalent", test.checkIfWorks(testStrings));
@@ -17,7 +17,7 @@ class EquivalentStringsTest {
   @Test
   public void testBananaAndOrange() {
     String[] testStrings = new String[] {"banana", "orange"};
-    EquivalentStrings test = new EquivalentStrings(testStrings);
+    EquivalentStrings test = new EquivalentStrings(testStrings[0], testStrings[1]);
     test.main(testStrings);
 
     assertEquals("not equivalent", test.checkIfWorks(testStrings));
@@ -26,7 +26,7 @@ class EquivalentStringsTest {
   @Test
   public void testBongoAndDrum() {
     String[] testStrings = new String[] {"bongo", "drum"};
-    EquivalentStrings test = new EquivalentStrings(testStrings);
+    EquivalentStrings test = new EquivalentStrings(testStrings[0], testStrings[1]);
     test.main(testStrings);
 
     assertEquals("not equivalent", test.checkIfWorks(testStrings));
@@ -35,7 +35,7 @@ class EquivalentStringsTest {
   @Test
   public void testNoArguments() {
     String[] testStrings = new String[] {};
-    EquivalentStrings test = new EquivalentStrings(testStrings);
+    EquivalentStrings test = new EquivalentStrings(testStrings[0], testStrings[1]);
     test.main(testStrings);
 
     assertEquals(
@@ -46,7 +46,7 @@ class EquivalentStringsTest {
   @Test
   public void testTooFewArguments() {
     String[] testStrings = new String[] {"abc"};
-    EquivalentStrings test = new EquivalentStrings(testStrings);
+    EquivalentStrings test = new EquivalentStrings(testStrings[0], testStrings[1]);
     test.main(testStrings);
 
     assertEquals(
@@ -57,7 +57,7 @@ class EquivalentStringsTest {
   @Test
   public void testTooManyArguments() {
     String[] testStrings = new String[] {"applebees", "bar", "and", "grill"};
-    EquivalentStrings test = new EquivalentStrings(testStrings);
+    EquivalentStrings test = new EquivalentStrings(testStrings[0], testStrings[1]);
     test.main(testStrings);
 
     assertEquals(
