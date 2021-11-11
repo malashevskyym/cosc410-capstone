@@ -12,7 +12,6 @@ public class WordSearch {
   int row;
   int col;
   String wordBuild = "";
-  ArrayList<String> coordinates = new ArrayList<String>();
   String coordinatesString = "";
   String grid;
 
@@ -54,14 +53,12 @@ public class WordSearch {
     return grid;
   }
 
-  private void setCoordinate(char a, int b, int c) {
+  private String setCoordinate(char a, int b, int c) {
     String temp = String.valueOf(a) + ":" + (b + 1) + "," + (c + 1);
-    coordinates.add(temp);
+    return temp;
   }
 
   private void findFirstLetter(int Iindex, int Tindex) {
-    wordBuild = "";
-    coordinates.clear();
     outerloop:
     for (int i = Iindex; i < height; i++) {
       if (i > Iindex) {
@@ -69,74 +66,70 @@ public class WordSearch {
       }
       for (int t = Tindex; t < width; t++) {
         if (board[i][t] == word.charAt(0)) {
-          wordBuild = wordBuild + board[i][t];
           row = i;
           col = t;
-          setCoordinate(board[i][t], i, t);
-          findNextLetter(1, i, t);
+          String c2 = "" + setCoordinate(board[i][t], i, t);
+          findNextLetter(1, i, t, "" + board[i][t], c2);
           break outerloop;
         }
       }
     }
-    if (!wordBuild.contentEquals(word)) {
-      coordinates.clear();
-    }
   }
 
-  public boolean lookRight(int index, int z, int y) {
-    if (wordBuild.contentEquals(word)) {
+  public boolean lookRight(int index, int z, int y, String w1, String c1) {
+    if (w1.contentEquals(word)) {
     } else if (y < width - 1 && board[z][y + 1] == word.charAt(index)) {
-      wordBuild = wordBuild + board[z][y + 1];
-      setCoordinate(board[z][y + 1], z, y + 1);
-      findNextLetter(index + 1, z, y + 1);
+      String c2 = c1 + " " + setCoordinate(board[z][y + 1], z, y + 1);
+      findNextLetter(index + 1, z, y + 1, w1 + board[z][y + 1], c2);
       return true;
     }
     return false;
   }
 
-  public boolean lookLeft(int index, int z, int y) {
-    if (wordBuild.contentEquals(word)) {
+  public boolean lookLeft(int index, int z, int y, String w1, String c1) {
+    if (w1.contentEquals(word)) {
     } else if (y > 0 && y <= width - 1 && board[z][y - 1] == word.charAt(index)) {
-      wordBuild = wordBuild + board[z][y - 1];
-      setCoordinate(board[z][y - 1], z, y - 1);
-      findNextLetter(index + 1, z, y - 1);
+      String c2 = c1 + " " + setCoordinate(board[z][y - 1], z, y - 1);
+      findNextLetter(index + 1, z, y - 1, w1 + board[z][y - 1], c2);
+      return true;
     }
     return false;
   }
 
-  public boolean lookDown(int index, int z, int y) {
-    if (wordBuild.contentEquals(word)) {
+  public boolean lookDown(int index, int z, int y, String w1, String c1) {
+    if (w1.contentEquals(word)) {
     } else if (z < height - 1 && board[z + 1][y] == word.charAt(index)) {
-      wordBuild = wordBuild + board[z + 1][y];
-      setCoordinate(board[z + 1][y], z + 1, y);
-      findNextLetter(index + 1, z + 1, y);
+      String c2 = c1 + " " + setCoordinate(board[z + 1][y], z + 1, y);
+      findNextLetter(index + 1, z + 1, y, w1 + board[z + 1][y], c2);
     } else if (z < height - 1 && board[z + 1][y] == word.charAt(index)) {
-      wordBuild = wordBuild + board[z + 1][y];
-      setCoordinate(board[z][y + 1], z + 1, y);
-      findNextLetter(index + 1, z + 1, y);
+      String c2 = c1 + " " + setCoordinate(board[z + 1][y], z + 1, y);
+      findNextLetter(index + 1, z + 1, y, w1 + board[z + 1][y], c2);
+      return true;
     }
     return false;
   }
 
-  public boolean lookUp(int index, int z, int y) {
-    if (wordBuild.contentEquals(word)) {
+  public boolean lookUp(int index, int z, int y, String w1, String c1) {
+    if (w1.contentEquals(word)) {
     } else if (z > 0 && z <= height - 1 && board[z - 1][y] == word.charAt(index)) {
-      wordBuild = wordBuild + board[z - 1][y];
-      setCoordinate(board[z - 1][y], z - 1, y);
-      findNextLetter(index + 1, z - 1, y);
+      String c2 = c1 + " " + setCoordinate(board[z - 1][y], z - 1, y);
+      findNextLetter(index + 1, z - 1, y, w1 + board[z - 1][y], c2);
+      return true;
     }
     return false;
   }
 
-  private void findNextLetter(int index, int z, int y) {
-    if (wordBuild.contentEquals(word)) {
-      System.out.println(wordBuild);
+  private void findNextLetter(int index, int z, int y, String w1, String c1) {
+    System.out.println(w1 + " z: " + z + " y: " + y);
+    if (w1.contentEquals(word)) {
+      wordBuild = w1;
+      coordinatesString = c1;
     } else {
-      if (lookUp(index, z, y)) {
-      } else if (lookDown(index, z, y)) {
-      } else if (lookRight(index, z, y)) {
-      } else if (lookLeft(index, z, y)) {
-      } else if (!wordBuild.contentEquals(word)) {
+      boolean up = lookUp(index, z, y, w1, c1);
+      boolean down = lookDown(index, z, y, w1, c1);
+      boolean right = lookRight(index, z, y, w1, c1);
+      boolean left = lookLeft(index, z, y, w1, c1);
+      if (!up && !down && !right && !left) {
         if (col == col - 1) {
           col = 0;
           findFirstLetter(row + 1, col);
@@ -153,13 +146,13 @@ public class WordSearch {
   }
 
   public String getFoundCoordinate() {
-    String listString = String.join(" ", coordinates);
-    if (coordinates.isEmpty()) {
-      coordinatesString = word + " not found";
+    String cString;
+    if (!wordBuild.contains(word)) {
+      cString = word + " not found";
     } else {
-      coordinatesString = listString;
+      cString = coordinatesString;
     }
-    return coordinatesString;
+    return cString;
   }
 
   public static void main(String[] args) {
@@ -169,8 +162,8 @@ public class WordSearch {
             "Find a target word in a grid.");
     testLine.addRequiredArgument("grid", LineParser.Datatype.STRING, "the grid to search");
     testLine.addRequiredArgument("target", LineParser.Datatype.STRING, "the target word");
-    testLine.addOptionalArgument("WIDTH", LineParser.Datatype.INTEGER, "the grid width", "5");
-    testLine.addOptionalArgument("HEIGHT", LineParser.Datatype.INTEGER, "the grid height", "5");
+    testLine.addOptionalArgument("WIDTH", LineParser.Datatype.INTEGER, "5", "the grid width");
+    testLine.addOptionalArgument("HEIGHT", LineParser.Datatype.INTEGER, "5", "the grid height");
     try {
       testLine.parse(args);
       WordSearch test = new WordSearch();

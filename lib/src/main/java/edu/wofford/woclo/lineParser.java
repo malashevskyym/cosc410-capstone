@@ -10,9 +10,7 @@ public class LineParser {
 
   /** Represents data types. */
   public enum Datatype {
-    STRING("STRING"),
-    INTEGER("INT"),
-    FLOAT("FLOAT");
+    STRING("STRING"), INTEGER("INT"), FLOAT("FLOAT");
 
     public final String label;
 
@@ -23,18 +21,19 @@ public class LineParser {
     @SuppressWarnings("unchecked")
     public <T> T parseType(String value) {
       switch (this) {
-        case INTEGER:
-          return (T) Integer.valueOf(value);
-        case FLOAT:
-          return (T) Float.valueOf(value);
-        default:
-          return (T) value;
+      case INTEGER:
+        return (T) Integer.valueOf(value);
+      case FLOAT:
+        return (T) Float.valueOf(value);
+      default:
+        return (T) value;
       }
     }
   };
 
   /** Constructs an empty map of named arguments. */
-  public LineParser() {};
+  public LineParser() {
+  };
 
   /**
    * Constructs an empty map of named arguments.
@@ -48,7 +47,7 @@ public class LineParser {
   /**
    * Constructs an empty map of named arguments.
    *
-   * @param usageInfo This is for usage information about the program.
+   * @param usageInfo   This is for usage information about the program.
    * @param programInfo This is for the program's description.
    */
   public LineParser(String usageInfo, String programInfo) {
@@ -57,8 +56,8 @@ public class LineParser {
   }
 
   /**
-   * Specify an argument to come through the command line. Adds the argument to the argument map,
-   * declaring a type.
+   * Specify an argument to come through the command line. Adds the argument to
+   * the argument map, declaring a type.
    *
    * @param name The name of the argument (what its called).
    * @param type The data type of the argument (float, int, or string).
@@ -69,8 +68,8 @@ public class LineParser {
   }
 
   /**
-   * Specify an argument to come through the command line. Adds the argument to the argument map,
-   * declaring a type.
+   * Specify an argument to come through the command line. Adds the argument to
+   * the argument map, declaring a type.
    *
    * @param name The name of the argument (what its called).
    * @param type The data type of the argument (float, int, or string).
@@ -84,8 +83,8 @@ public class LineParser {
   /**
    * Request an argument that will be optional in the command line.
    *
-   * @param name The name of the argument (what its called).
-   * @param type The data type of the argument (float, int, or string).
+   * @param name         The name of the argument (what its called).
+   * @param type         The data type of the argument (float, int, or string).
    * @param defaultValue The default value for the optional parameter.
    */
   public void addOptionalArgument(String name, Datatype type, String defaultValue) {
@@ -96,10 +95,11 @@ public class LineParser {
   /**
    * Request an argument that will be optional in the command line.
    *
-   * @param name The name of the argument (what its called).
-   * @param type The data type of the argument (float, int, or string).
+   * @param name         The name of the argument (what its called).
+   * @param type         The data type of the argument (float, int, or string).
    * @param defaultValue The default value for the optional parameter.
-   * @param help Any additional descriptive help information about the argument.
+   * @param help         Any additional descriptive help information about the
+   *                     argument.
    */
   public void addOptionalArgument(String name, Datatype type, String defaultValue, String help) {
     arguments.put(name, new Argument(type, help));
@@ -140,8 +140,8 @@ public class LineParser {
   // NOT exist.
 
   /**
-   * Checks that the arguments passed into the command line can be parsed into their specified
-   * types.
+   * Checks that the arguments passed into the command line can be parsed into
+   * their specified types.
    */
   private void checkArgumentsForTypeEquivalence(Datatype type, String value) {
     if (type == Datatype.FLOAT) {
@@ -160,10 +160,11 @@ public class LineParser {
   }
 
   /**
-   * Parses the given command line arguments and maps them to a value. Returns exceptions under the
-   * following cases: -If there are more non-named arguments than identifiers. -If there are less
-   * non named arguments than identifiers. -If a given argument value cannot be converted to its
-   * specified type. -If a named argument is declared but not followed by a value.
+   * Parses the given command line arguments and maps them to a value. Returns
+   * exceptions under the following cases: -If there are more non-named arguments
+   * than identifiers. -If there are less non named arguments than identifiers.
+   * -If a given argument value cannot be converted to its specified type. -If a
+   * named argument is declared but not followed by a value.
    *
    * @param args String array representation of command line values.
    */
@@ -179,14 +180,13 @@ public class LineParser {
         String current = q.remove();
 
         // If it is named
-        if (current.substring(0, 1).equals("-")
-            && arguments.keySet().contains(current.substring(2))) {
+        System.out.println(current);
+        if (current.startsWith("--")) {
           String value = q.peek();
           Datatype type = arguments.get(current.substring(2)).type;
           checkArgumentsForTypeEquivalence(type, value);
           if (q.peek() == null
-              || (q.peek().substring(0, 1).equals("-")
-                  && arguments.keySet().contains(q.peek().substring(2)))) {
+              || (q.peek().substring(0, 1).equals("-") && arguments.keySet().contains(q.peek().substring(2)))) {
             throw new IllegalArgumentException("no value for " + current);
           }
           arguments.get(current.substring(2)).setValue(value);
@@ -206,8 +206,7 @@ public class LineParser {
         }
       }
       if (argumentNameByPosition.size() - 1 >= position) {
-        throw new IllegalArgumentException(
-            "the argument " + argumentNameByPosition.get(position) + " is required");
+        throw new IllegalArgumentException("the argument " + argumentNameByPosition.get(position) + " is required");
       }
     }
   }
@@ -267,7 +266,13 @@ public class LineParser {
     }
     helpMessage += buffer;
     buffer.delete(0, buffer.length());
-    helpMessage += "\nnamed arguments:\n -h, --help  show this help message and exit";
+    helpMessage += "\nnamed arguments:\n -h, --help";
+    spaces = largestWord + 2;
+    spaces = spaces - "-h, --help".length();
+    for (int j = 0; j < spaces; j++) {
+      buffer.append(" ");
+    }
+    buffer.append("show this help message and exit");
 
     for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
       // 18 spaces + 14 spaces + argument help message + (default: value) (except for
@@ -297,8 +302,8 @@ public class LineParser {
           buffer.append(" ");
         }
 
-        buffer.append(arguments.get(entry.getKey()).value + " ");
-        buffer.append("(default: " + arguments.get(entry.getKey()).help + ")");
+        buffer.append(arguments.get(entry.getKey()).help + " ");
+        buffer.append("(default: " + arguments.get(entry.getKey()).value + ")");
       }
     }
     helpMessage += buffer;
