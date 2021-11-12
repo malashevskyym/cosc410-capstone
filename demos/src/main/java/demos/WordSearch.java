@@ -120,8 +120,8 @@ public class WordSearch {
   }
 
   private void findNextLetter(int index, int z, int y, String w1, String c1) {
-    System.out.println(w1 + " z: " + z + " y: " + y);
-    if (w1.contentEquals(word)) {
+    // System.out.println(w1 + " z: " + z + " y: " + y);
+    if (w1.contentEquals(word) && !wordBuild.contentEquals(word)) {
       wordBuild = w1;
       coordinatesString = c1;
     } else {
@@ -162,32 +162,37 @@ public class WordSearch {
             "Find a target word in a grid.");
     testLine.addRequiredArgument("grid", LineParser.Datatype.STRING, "the grid to search");
     testLine.addRequiredArgument("target", LineParser.Datatype.STRING, "the target word");
-    testLine.addOptionalArgument("WIDTH", LineParser.Datatype.INTEGER, "5", "the grid width");
-    testLine.addOptionalArgument("HEIGHT", LineParser.Datatype.INTEGER, "5", "the grid height");
+    testLine.addOptionalArgument("width", LineParser.Datatype.INTEGER, "5", "the grid width");
+    testLine.addOptionalArgument("height", LineParser.Datatype.INTEGER, "5", "the grid height");
     try {
       testLine.parse(args);
-      WordSearch test = new WordSearch();
-      test.setHeight(testLine.getArgument("HEIGHT"));
-      test.setWidth(testLine.getArgument("WIDTH"));
-      test.setBoard(testLine.getArgument("grid"));
-      test.setWord(testLine.getArgument("target"));
-      test.findWord();
-      String wordResult = test.getFoundCoordinate();
-      if (test.getHeight() * test.getWidth() != test.getGrid().length()) {
-        System.out.println(
-            "WordSearch error: "
-                + "grid dimensions ("
-                + test.getWidth()
-                + " x "
-                + test.getHeight()
-                + ") do not match grid length ("
-                + test.getGrid().length()
-                + ")");
-      } else {
-        System.out.println(wordResult);
+      if (testLine.detectHelp(args) == false) {
+        WordSearch test = new WordSearch();
+        test.setHeight(testLine.getArgument("height"));
+        test.setWidth(testLine.getArgument("width"));
+        test.setBoard(testLine.getArgument("grid"));
+        test.setWord(testLine.getArgument("target"));
+        test.findWord();
+
+        String wordResult = test.getFoundCoordinate();
+        if (test.getHeight() * test.getWidth() != test.getGrid().length()) {
+          System.out.println(
+              "WordSearch error: "
+                  + "grid dimensions ("
+                  + test.getWidth()
+                  + " x "
+                  + test.getHeight()
+                  + ") do not match grid length ("
+                  + test.getGrid().length()
+                  + ")");
+        } else {
+          System.out.println(wordResult);
+        }
       }
     } catch (Exception e) {
-      System.out.println("WordSearch error: " + e.getMessage());
+      if (testLine.detectHelp(args) == false) {
+        System.out.println("WordSearch error: " + e.getMessage());
+      }
     }
   }
 }
