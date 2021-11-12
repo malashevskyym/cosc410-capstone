@@ -1,6 +1,7 @@
 package edu.wofford.woclo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import edu.wofford.woclo.LineParser.Datatype;
@@ -350,5 +351,39 @@ public class LineParserTest {
     String[] test1 = new String[] {"3.15"};
     Test.parse(test1);
     assertEquals((Float) 3.15f, Test.getArgument("X"));
+  }
+
+  @Test
+  public void testOptionalBoolean() {
+    LineParser Test = new LineParser("This program calculates trajectory");
+
+    Test.addRequiredArgument("X", LineParser.Datatype.INTEGER, "Length");
+    Test.addRequiredArgument("Y", LineParser.Datatype.INTEGER, "Width");
+    Test.addRequiredArgument("Z", LineParser.Datatype.INTEGER, "Height");
+    Test.addOptionalArgument("type", LineParser.Datatype.STRING, "Box", "Shape");
+    Test.addOptionalArgument("equilateral", LineParser.Datatype.BOOLEAN);
+
+    String[] test1 = new String[] {"2", "4", "7", "--type", "box", "--equilateral"};
+    Test.parse(test1);
+    boolean x = Test.getArgument("equilateral");
+    assertTrue(x);
+  }
+
+  @Test
+  public void testOptionalBooleanNot() {
+    LineParser Test = new LineParser("This program calculates trajectory");
+
+    Test.addRequiredArgument("X", LineParser.Datatype.INTEGER, "Length");
+    Test.addRequiredArgument("Y", LineParser.Datatype.INTEGER, "Width");
+    Test.addRequiredArgument("Z", LineParser.Datatype.INTEGER, "Height");
+    Test.addOptionalArgument("number", LineParser.Datatype.INTEGER);
+    Test.addOptionalArgument("number2", LineParser.Datatype.FLOAT);
+    Test.addOptionalArgument("type", LineParser.Datatype.STRING);
+    Test.addOptionalArgument("equilateral", LineParser.Datatype.BOOLEAN);
+
+    String[] test1 = new String[] {"2", "4", "7", "--type", "box"};
+    Test.parse(test1);
+    boolean x = Test.getArgument("equilateral");
+    assertFalse(x);
   }
 }
