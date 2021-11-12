@@ -4,6 +4,7 @@ import edu.wofford.woclo.*;
 import java.util.LinkedHashSet;
 
 public class EquivalentStrings {
+  String message = "";
 
   public static void main(String... args) {
     LineParser parser =
@@ -17,46 +18,15 @@ public class EquivalentStrings {
       parser.parse(args);
       EquivalentStrings equivalentStrings =
           new EquivalentStrings(parser.getArgument("string1"), parser.getArgument("string2"));
-      System.out.println(equivalentStrings);
+
+      System.out.println(equivalentStrings.message);
     } catch (Exception e) {
       System.out.println("EquivalentStrings error: " + e.getMessage());
     }
   }
 
-  public EquivalentStrings() {}
-
   public EquivalentStrings(String stringOne, String stringTwo) {
-    String string1 = stringOne;
-    String string2 = stringTwo;
-
-    System.out.println(checkIfEquivalent(string1, string2));
-  }
-
-  public String checkIfEquivalent(String stringOne, String stringTwo) {
-    if (isEquivalent(stringOne, stringTwo)) {
-      return "equivalent";
-    } else {
-      return "not equivalent";
-    }
-  }
-
-  public String checkIfWorks(String[] args) {
-    LineParser parser = new LineParser();
-    parser.addRequiredArgument("string1", LineParser.Datatype.STRING, "the first string");
-    parser.addRequiredArgument("string2", LineParser.Datatype.STRING, "the second string");
-
-    String message = "";
-    try {
-      parser.parse(args);
-      if (isEquivalent(args[0], args[1])) {
-        message = "equivalent";
-      } else {
-        message = "not equivalent";
-      }
-    } catch (Exception e) {
-      message = "EquivalentStrings error: " + e.getMessage();
-    }
-    return message;
+    message = checkIfEquivalent(stringOne, stringTwo);
   }
 
   private String convertStringToExpression(String s) {
@@ -82,12 +52,12 @@ public class EquivalentStrings {
     return false;
   }
 
-  private boolean isEquivalent(String first, String second) {
+  private String checkIfEquivalent(String first, String second) {
     String convertedFirst = convertStringToExpression(first);
     String convertedSecond = convertStringToExpression(second);
     if (checkSameLength(first, second) && convertedFirst.equals(convertedSecond)) {
-      return true;
+      return "equivalent";
     }
-    return false;
+    return "not equivalent";
   }
 }
