@@ -10,7 +10,10 @@ public class LineParser {
 
   /** Represents data types. */
   public enum Datatype {
-    STRING("STRING"), INTEGER("INT"), FLOAT("FLOAT"), BOOLEAN("BOOLEAN");
+    STRING("STRING"),
+    INTEGER("INT"),
+    FLOAT("FLOAT"),
+    BOOLEAN("BOOLEAN");
 
     public final String label;
 
@@ -21,21 +24,20 @@ public class LineParser {
     @SuppressWarnings("unchecked")
     public <T> T parseType(String value) {
       switch (this) {
-      case INTEGER:
-        return (T) Integer.valueOf(value);
-      case FLOAT:
-        return (T) Float.valueOf(value);
-      case BOOLEAN:
-        return (T) Boolean.valueOf(value);
-      default:
-        return (T) value;
+        case INTEGER:
+          return (T) Integer.valueOf(value);
+        case FLOAT:
+          return (T) Float.valueOf(value);
+        case BOOLEAN:
+          return (T) Boolean.valueOf(value);
+        default:
+          return (T) value;
       }
     }
   };
 
   /** Constructs an empty map of named arguments. */
-  public LineParser() {
-  };
+  public LineParser() {};
 
   /**
    * Constructs an empty map of named arguments.
@@ -49,7 +51,7 @@ public class LineParser {
   /**
    * Constructs an empty map of named arguments.
    *
-   * @param usageInfo   This is for usage information about the program.
+   * @param usageInfo This is for usage information about the program.
    * @param programInfo This is for the program's description.
    */
   public LineParser(String usageInfo, String programInfo) {
@@ -58,8 +60,8 @@ public class LineParser {
   }
 
   /**
-   * Specify an argument to come through the command line. Adds the argument to
-   * the argument map, declaring a type.
+   * Specify an argument to come through the command line. Adds the argument to the argument map,
+   * declaring a type.
    *
    * @param name The name of the argument (what its called).
    * @param type The data type of the argument (float, int, or string).
@@ -70,8 +72,8 @@ public class LineParser {
   }
 
   /**
-   * Specify an argument to come through the command line. Adds the argument to
-   * the argument map, declaring a type.
+   * Specify an argument to come through the command line. Adds the argument to the argument map,
+   * declaring a type.
    *
    * @param name The name of the argument (what its called).
    * @param type The data type of the argument (float, int, or string).
@@ -83,8 +85,8 @@ public class LineParser {
   }
 
   /**
-   * Request an argument that will be optional in the command line. Since no
-   * default has been added values will be set to default.
+   * Request an argument that will be optional in the command line. Since no default has been added
+   * values will be set to default.
    *
    * @param name The name of the argument (what its called).
    * @param type The data type of the argument (float, int, or string).
@@ -105,8 +107,8 @@ public class LineParser {
   /**
    * Request an argument that will be optional in the command line.
    *
-   * @param name         The name of the argument (what its called).
-   * @param type         The data type of the argument (float, int, or string).
+   * @param name The name of the argument (what its called).
+   * @param type The data type of the argument (float, int, or string).
    * @param defaultValue The default value for the optional parameter.
    */
   public void addOptionalArgument(String name, Datatype type, String defaultValue) {
@@ -117,15 +119,21 @@ public class LineParser {
   /**
    * Request an argument that will be optional in the command line.
    *
-   * @param name         The name of the argument (what its called).
-   * @param type         The data type of the argument (float, int, or string).
+   * @param name The name of the argument (what its called).
+   * @param type The data type of the argument (float, int, or string).
    * @param defaultValue The default value for the optional parameter.
-   * @param help         Any additional descriptive help information about the
-   *                     argument.
+   * @param help Any additional descriptive help information about the argument.
    */
   public void addOptionalArgument(String name, Datatype type, String defaultValue, String help) {
     arguments.put(name, new Argument(type, help));
     arguments.get(name).setValue(defaultValue);
+  }
+
+  public void addOptionalArgument(
+      String name, Datatype type, String defaultValue, String help, String shortName) {
+    arguments.put(name, new Argument(type, help));
+    arguments.get(name).setValue(defaultValue);
+    arguments.get(name).shortName = shortName;
   }
 
   /**
@@ -162,8 +170,8 @@ public class LineParser {
   // NOT exist.
 
   /**
-   * Checks that the arguments passed into the command line can be parsed into
-   * their specified types.
+   * Checks that the arguments passed into the command line can be parsed into their specified
+   * types.
    */
   private void checkArgumentsForTypeEquivalence(Datatype type, String value) {
     if (type == Datatype.FLOAT) {
@@ -182,11 +190,10 @@ public class LineParser {
   }
 
   /**
-   * Parses the given command line arguments and maps them to a value. Returns
-   * exceptions under the following cases: -If there are more non-named arguments
-   * than identifiers. -If there are less non named arguments than identifiers.
-   * -If a given argument value cannot be converted to its specified type. -If a
-   * named argument is declared but not followed by a value.
+   * Parses the given command line arguments and maps them to a value. Returns exceptions under the
+   * following cases: -If there are more non-named arguments than identifiers. -If there are less
+   * non named arguments than identifiers. -If a given argument value cannot be converted to its
+   * specified type. -If a named argument is declared but not followed by a value.
    *
    * @param args String array representation of command line values.
    */
@@ -201,30 +208,59 @@ public class LineParser {
       while (q.isEmpty() == false) {
         String current = q.remove();
 
-        // If it is named
+        // If it is named long form
 
-        if (current.startsWith("--")) {
+        if (current.startsWith("-")) {
 
-          String value = q.peek();
-          Datatype type = arguments.get(current.substring(2)).type;
-          // If it is a boolean argument
-          if (arguments.get(current.substring(2)).type == Datatype.BOOLEAN) {
-            arguments.get(current.substring(2)).value = "true";
+          if (current.substring(1, 2).equals("-")) {
+
+            String value = q.peek();
+            Datatype type = arguments.get(current.substring(2)).type;
+            // If it is a boolean argument
+            if (arguments.get(current.substring(2)).type == Datatype.BOOLEAN) {
+              arguments.get(current.substring(2)).value = "true";
+            } else {
+              // Remove from queue, get type.
+
+              if (q.isEmpty()) {
+                throw new IllegalArgumentException("no value for " + current.substring(2));
+              }
+              checkArgumentsForTypeEquivalence(type, value);
+              if ((q.peek().startsWith("--"))) {
+                throw new IllegalArgumentException("no value for " + current.substring(2));
+              }
+
+              arguments.get(current.substring(2)).setValue(value);
+              q.remove();
+            }
+            // If optional is named shortform
           } else {
-            // Remove from queue, get type.
-
-            if (q.isEmpty()) {
-              throw new IllegalArgumentException("no value for " + current.substring(2));
+            String value = q.peek();
+            String longName = "";
+            for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
+              if (entry.getValue().shortName.equals(current.substring(1))) {
+                longName = entry.getKey();
+                break;
+              }
             }
-            checkArgumentsForTypeEquivalence(type, value);
-            if ((q.peek().startsWith("--"))) {
-              throw new IllegalArgumentException("no value for " + current.substring(2));
-            }
+            Datatype type = arguments.get(longName).type;
+            if (arguments.get(longName).type == Datatype.BOOLEAN) {
+              arguments.get(longName).value = "true";
+            } else {
+              // Remove from queue, get type.
 
-            arguments.get(current.substring(2)).setValue(value);
-            q.remove();
+              if (q.isEmpty()) {
+                throw new IllegalArgumentException("no value for " + longName);
+              }
+              checkArgumentsForTypeEquivalence(type, value);
+              if ((q.peek().startsWith("--") || q.peek().startsWith("-"))) {
+                throw new IllegalArgumentException("no value for " + longName);
+              }
+
+              arguments.get(longName).setValue(value);
+              q.remove();
+            }
           }
-
           // If it is required
         } else {
           if (position > argumentNameByPosition.size() - 1) {
@@ -239,7 +275,8 @@ public class LineParser {
         }
       }
       if (argumentNameByPosition.size() - 1 >= position) {
-        throw new IllegalArgumentException("the argument " + argumentNameByPosition.get(position) + " is required");
+        throw new IllegalArgumentException(
+            "the argument " + argumentNameByPosition.get(position) + " is required");
       }
     }
   }
@@ -312,7 +349,8 @@ public class LineParser {
       // -h/--help)
       if (argumentNameByPosition.contains(entry.getKey()) == false) {
         spaces = largestWord + 2;
-        String variable = "--" + entry.getKey() + " " + entry.getKey().toUpperCase(Locale.getDefault());
+        String variable =
+            "--" + entry.getKey() + " " + entry.getKey().toUpperCase(Locale.getDefault());
         buffer.append("\n ");
         buffer.append(variable);
         spaces = spaces - variable.length();

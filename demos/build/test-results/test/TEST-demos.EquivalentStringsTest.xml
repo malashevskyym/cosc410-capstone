@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="demos.EquivalentStringsTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2021-11-17T15:35:45" hostname="DESKTOP-VF6F7ON" time="0.082">
+  <properties/>
+  <testcase name="testEquivalentStringsMain()" classname="demos.EquivalentStringsTest" time="0.07"/>
+  <testcase name="testBongoAndDrum()" classname="demos.EquivalentStringsTest" time="0.002"/>
+  <testcase name="testEquivalentStringsMainException()" classname="demos.EquivalentStringsTest" time="0.002"/>
+  <testcase name="testCocoonAndZyzyyx()" classname="demos.EquivalentStringsTest" time="0.002"/>
+  <testcase name="testBananaAndOrange()" classname="demos.EquivalentStringsTest" time="0.001"/>
+  <system-out><![CDATA[equivalent
+EquivalentStrings error: the value Tons matches no argument
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

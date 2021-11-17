@@ -7,6 +7,7 @@ public class Argument {
   Datatype type;
   String value = "";
   String help = "";
+  String shortName = "";
 
   public Argument(Datatype type) {
     this.type = type;

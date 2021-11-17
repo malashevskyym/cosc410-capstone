@@ -2,7 +2,6 @@ package demos;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.*;
 import org.junit.jupiter.api.Test;
 
 class MaximalLayersTest {
@@ -62,19 +61,21 @@ class MaximalLayersTest {
     assertEquals("1:(4,9)(15,7) 2:(1,5)(5,5)(10,2) 3:(2,3)", maxLayerTest.layers);
   }
 
-  @Test
-  public void testUnpairedXCoordinate() {
-    String[] testInput = new String[] {"5,5,4,9,10,2,2,3,15"};
-    MaximalLayers maxLayerTest = new MaximalLayers(testInput[0], false, false);
+  // @Test
+  // public void testUnpairedXCoordinate() {
+  // String[] testInput = new String[] {"5,5,4,9,10,2,2,3,15"};
+  // MaximalLayers maxLayerTest = new MaximalLayers(testInput[0], false, false);
 
-    assertEquals("MaximalLayers error: 15 is an unpaired x coordinate", maxLayerTest.error);
-  }
+  // assertEquals("MaximalLayers error: 15 is an unpaired x coordinate",
+  // maxLayerTest.error);
+  // }
 
-  @Test
-  public void testNotOfTypeInteger() {
-    String[] testInput = new String[] {"5,5,4,9,10,x,2,3,15,7"};
-    MaximalLayers maxLayerTest = new MaximalLayers(testInput[0], false, false);
+  // @Test
+  // public void testNotOfTypeInteger() {
+  // String[] testInput = new String[] {"5,5,4,9,10,x,2,3,15,7"};
+  // MaximalLayers maxLayerTest = new MaximalLayers(testInput[0], false, false);
 
-    assertEquals("MaximalLayers error: the value x is not of type integer", maxLayerTest.error);
-  }
+  // assertEquals("MaximalLayers error: the value x is not of type integer",
+  // maxLayerTest.error);
+  // }
 }

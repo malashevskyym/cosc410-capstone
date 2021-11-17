@@ -10,6 +10,7 @@ public class MaximalLayers {
   String error = "";
 
   public static void main(String... args) {
+
     LineParser parser =
         new LineParser(
             "java MaximalLayers [-h] [--sortedX] [--sortedY] points",
@@ -22,6 +23,15 @@ public class MaximalLayers {
 
     try {
       parser.parse(args);
+      String value = parser.getArgument("points");
+      String[] values = value.split(",");
+      for (int i = 0; i < values.length; i++) {
+        try {
+          Integer.parseInt(values[i]);
+        } catch (NumberFormatException e) {
+          throw new IllegalArgumentException("the value " + values[i] + " is not of type integer");
+        }
+      }
       MaximalLayers maximalLayers =
           new MaximalLayers(
               parser.getArgument("points"),
