@@ -85,6 +85,22 @@ public class LineParser {
   }
 
   /**
+   * Specify an argument to come through the command line. Adds the argument to the argument map,
+   * declaring a type.
+   *
+   * @param name The name of the argument (what its called).
+   * @param type The data type of the argument (float, int, or string).
+   * @param help Any additional descriptive help information about the argument.
+   */
+  public void addRequiredArgument(
+      String name, Datatype type, String help, String[] discreteValues) {
+    arguments.put(name, new Argument(type, help));
+    argumentNameByPosition.add(name);
+    checkDiscreteValueTypes(arguments.get(name).type, discreteValues);
+    arguments.get(name).discreteValues = discreteValues;
+  }
+
+  /**
    * Request an argument that will be optional in the command line. Since no default has been added
    * values will be set to default.
    *
@@ -134,6 +150,20 @@ public class LineParser {
     arguments.put(name, new Argument(type, help));
     arguments.get(name).setValue(defaultValue);
     arguments.get(name).shortName = shortName;
+  }
+
+  public void addOptionalArgument(
+      String name,
+      Datatype type,
+      String defaultValue,
+      String help,
+      String shortName,
+      String[] discreteValues) {
+    arguments.put(name, new Argument(type, help));
+    arguments.get(name).setValue(defaultValue);
+    arguments.get(name).shortName = shortName;
+    checkDiscreteValueTypes(arguments.get(name).type, discreteValues);
+    arguments.get(name).discreteValues = discreteValues;
   }
 
   /**
@@ -189,6 +219,57 @@ public class LineParser {
     }
   }
 
+  /**
+   * Checks if given value has a discrete list, if it does, verify that value is within discreet
+   * list.
+   *
+   * @param argumentName Name of argument in map.
+   * @param values Value of argument on command line.
+   */
+  private void checkValueIsDiscrete(String argumentName, String values) {
+    if (arguments.get(argumentName).discreteValues.length > 0) {
+
+      if (!Arrays.asList(arguments.get(argumentName).discreteValues).contains(values)) {
+        throw new IllegalArgumentException(
+            argumentName
+                + " value "
+                + values
+                + " is not a member of "
+                + Arrays.toString(arguments.get(argumentName).discreteValues));
+      }
+    }
+  }
+
+  /**
+   * Checks discrete values are of proper type.
+   *
+   * @param type Type of data of argument.
+   * @param values Possible values for the argument.
+   */
+  private void checkDiscreteValueTypes(Datatype type, String[] values) {
+    for (String value : values) {
+      if (type == Datatype.FLOAT) {
+        try {
+          Float.parseFloat(value);
+        } catch (NumberFormatException e) {
+          throw new IllegalArgumentException("the value " + value + " is not of type float");
+        }
+      } else if (type == Datatype.INTEGER) {
+        try {
+          Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+          throw new IllegalArgumentException("the value " + value + " is not of type integer");
+        }
+      }
+    }
+  }
+
+  /**
+   * Get the long form name of a short form of a named optional argument.
+   *
+   * @param shortName The short form name.
+   * @return The long form name in the map.
+   */
   private String getLongForm(String shortName) {
     String s = "";
     for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
@@ -242,15 +323,14 @@ public class LineParser {
               if ((q.peek().startsWith("--"))) {
                 throw new IllegalArgumentException("no value for " + current.substring(2));
               }
-
+              checkValueIsDiscrete(current.substring(2), value);
               arguments.get(current.substring(2)).setValue(value);
               q.remove();
             }
             // If optional is named shortform
           } else {
             String value = q.peek();
-            String longName = getLongForm(current.substring(1));
-
+            String longName = getLongForm(current);
             Datatype type = arguments.get(longName).type;
             if (arguments.get(longName).type == Datatype.BOOLEAN) {
               arguments.get(longName).value = "true";
@@ -264,7 +344,7 @@ public class LineParser {
               if ((q.peek().startsWith("--") || q.peek().startsWith("-"))) {
                 throw new IllegalArgumentException("no value for " + longName);
               }
-
+              checkValueIsDiscrete(longName, value);
               arguments.get(longName).setValue(value);
               q.remove();
             }
@@ -278,6 +358,7 @@ public class LineParser {
           Datatype type = arguments.get(argumentNameByPosition.get(position)).type;
           String value = current;
           checkArgumentsForTypeEquivalence(type, value);
+          checkValueIsDiscrete(argumentNameByPosition.get(position), value);
           arguments.get(argumentNameByPosition.get(position)).setValue(current);
           position++;
         }

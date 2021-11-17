@@ -387,4 +387,83 @@ public class LineParserTest {
     Float value = Test.getArgument("type");
     assertEquals(f, value);
   }
+
+  @Test
+  public void testDiscreteValueString() {
+    LineParser Test = new LineParser();
+    Test.addRequiredArgument("X", LineParser.Datatype.FLOAT, "String to Float");
+    Test.addOptionalArgument(
+        "type",
+        Datatype.STRING,
+        "Box",
+        "displays Type",
+        "t",
+        new String[] {"box", "triangle", "rectangle"});
+    String[] test1 = new String[] {"2.0", "-t", "box"};
+    Test.parse(test1);
+    assertEquals("box", Test.getArgument("type"));
+  }
+
+  @Test
+  public void testDiscreteValueStringFailsOptional() {
+    LineParser Test = new LineParser();
+    Test.addRequiredArgument("X", LineParser.Datatype.FLOAT, "String to Float");
+    Test.addOptionalArgument(
+        "type",
+        Datatype.STRING,
+        "Box",
+        "displays Type",
+        "t",
+        new String[] {"box", "triangle", "rectangle"});
+    String[] test1 = new String[] {"2.0", "-t", "5"};
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          Test.parse(test1);
+        });
+  }
+
+  @Test
+  public void testDiscreteValueStringFailsRequired() {
+    LineParser Test = new LineParser();
+    Test.addRequiredArgument(
+        "X", LineParser.Datatype.INTEGER, "String to Float", new String[] {"1", "2", "3"});
+    Test.addOptionalArgument("type", Datatype.STRING);
+    String[] test1 = new String[] {"2.0", "-t", "5"};
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          Test.parse(test1);
+        });
+  }
+
+  @Test
+  public void testDiscreteValueStringFailsRequiredInt() {
+    LineParser Test = new LineParser();
+
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          Test.addRequiredArgument(
+              "X", LineParser.Datatype.INTEGER, "String to Float", new String[] {"1", "x", "3"});
+          Test.addOptionalArgument("type", Datatype.STRING);
+          String[] test1 = new String[] {"2.0", "-t", "5"};
+          Test.parse(test1);
+        });
+  }
+
+  @Test
+  public void testDiscreteValueStringFailsRequiredFloat() {
+    LineParser Test = new LineParser();
+
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          Test.addRequiredArgument(
+              "X", LineParser.Datatype.INTEGER, "String to Float", new String[] {"1", "x", "3"});
+          Test.addOptionalArgument("type", Datatype.STRING);
+          String[] test1 = new String[] {"2.0", "-t", "5"};
+          Test.parse(test1);
+        });
+  }
 }
