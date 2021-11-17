@@ -45,8 +45,13 @@ public class MaximalLayers {
     }
 
     for (int i = 0; i < pointsArray.length; i += 2) {
-      points.add(
-          new int[] {Integer.parseInt(pointsArray[i]), Integer.parseInt(pointsArray[i + 1])});
+      try {
+        points.add(
+            new int[] {Integer.parseInt(pointsArray[i]), Integer.parseInt(pointsArray[i + 1])});
+      } catch (Exception e) {
+        throw new IllegalArgumentException(
+            "the value " + pointsArray[i] + " is not of type integer");
+      }
     }
 
     if (sortY) {
