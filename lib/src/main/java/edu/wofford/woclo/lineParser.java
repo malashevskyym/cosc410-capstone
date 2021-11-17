@@ -189,6 +189,18 @@ public class LineParser {
     }
   }
 
+  private String getLongForm(String shortName) {
+    String s = "";
+    for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
+      if (entry.getValue().shortName.equals(shortName.substring(1))) {
+        s = entry.getKey();
+        break;
+      }
+    }
+
+    return s;
+  }
+
   /**
    * Parses the given command line arguments and maps them to a value. Returns exceptions under the
    * following cases: -If there are more non-named arguments than identifiers. -If there are less
@@ -210,7 +222,8 @@ public class LineParser {
 
         // If it is named long form
 
-        if (current.startsWith("-")) {
+        if (current.startsWith("-")
+            && (arguments.containsKey(current.substring(2)) || !getLongForm(current).equals(""))) {
 
           if (current.substring(1, 2).equals("-")) {
 
@@ -236,13 +249,8 @@ public class LineParser {
             // If optional is named shortform
           } else {
             String value = q.peek();
-            String longName = "";
-            for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
-              if (entry.getValue().shortName.equals(current.substring(1))) {
-                longName = entry.getKey();
-                break;
-              }
-            }
+            String longName = getLongForm(current.substring(1));
+
             Datatype type = arguments.get(longName).type;
             if (arguments.get(longName).type == Datatype.BOOLEAN) {
               arguments.get(longName).value = "true";
