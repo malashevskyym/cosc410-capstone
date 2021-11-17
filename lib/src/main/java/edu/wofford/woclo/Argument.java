@@ -7,6 +7,8 @@ public class Argument {
   Datatype type;
   String value = "";
   String help = "";
+  String shortName = "";
+  String[] discreteValues = new String[] {};
 
   public Argument(Datatype type) {
     this.type = type;

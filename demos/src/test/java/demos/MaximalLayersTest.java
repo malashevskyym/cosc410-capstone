@@ -2,7 +2,6 @@ package demos;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.*;
 import org.junit.jupiter.api.Test;
 
 class MaximalLayersTest {
@@ -68,7 +67,8 @@ class MaximalLayersTest {
     String[] testInput = new String[] {"5,5,4,9,10,2,2,3,15"};
     MaximalLayers maxLayerTest = new MaximalLayers(testInput[0], false, false);
 
-    assertEquals("MaximalLayers error: 15 is an unpaired x coordinate", maxLayerTest.error);
+    assertEquals("MaximalLayers error: 15 is an unpaired x coordinate",
+    maxLayerTest.error);
   }
 
   @Test
