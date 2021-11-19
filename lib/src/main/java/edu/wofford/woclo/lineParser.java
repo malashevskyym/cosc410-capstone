@@ -3,10 +3,11 @@ package edu.wofford.woclo;
 import java.util.*;
 
 public class LineParser {
-  Map<String, Argument> arguments = new HashMap<String, Argument>();
-  List<String> argumentNameByPosition = new ArrayList<String>();
-  String usageInfo;
-  String programInfo;
+  private Map<String, Argument> arguments = new HashMap<String, Argument>();
+  private List<String> argumentNameByPosition = new ArrayList<String>();
+  private List<String> optionalArgument = new ArrayList<String>();
+  private String usageInfo;
+  private String programInfo;
 
   /** Represents data types. */
   public enum Datatype {
@@ -118,6 +119,7 @@ public class LineParser {
     } else {
       arguments.get(name).setValue("");
     }
+    optionalArgument.add(name);
   }
 
   /**
@@ -130,6 +132,7 @@ public class LineParser {
   public void addOptionalArgument(String name, Datatype type, String defaultValue) {
     arguments.put(name, new Argument(type));
     arguments.get(name).setValue(defaultValue);
+    optionalArgument.add(name);
   }
 
   /**
@@ -143,6 +146,7 @@ public class LineParser {
   public void addOptionalArgument(String name, Datatype type, String defaultValue, String help) {
     arguments.put(name, new Argument(type, help));
     arguments.get(name).setValue(defaultValue);
+    optionalArgument.add(name);
   }
 
   public void addOptionalArgument(
@@ -150,6 +154,7 @@ public class LineParser {
     arguments.put(name, new Argument(type, help));
     arguments.get(name).setValue(defaultValue);
     arguments.get(name).shortName = shortName;
+    optionalArgument.add(name);
   }
 
   public void addOptionalArgument(
@@ -164,6 +169,7 @@ public class LineParser {
     arguments.get(name).shortName = shortName;
     checkDiscreteValueTypes(arguments.get(name).type, discreteValues);
     arguments.get(name).discreteValues = discreteValues;
+    optionalArgument.add(name);
   }
 
   /**
@@ -273,13 +279,28 @@ public class LineParser {
   private String getLongForm(String shortName) {
     String s = "";
     for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
-      if (entry.getValue().shortName.equals(shortName.substring(1))) {
+      if (entry.getValue().shortName.equals(shortName)) {
         s = entry.getKey();
         break;
       }
     }
 
     return s;
+  }
+
+  private boolean checkCombinedShortForms(String shortForm) {
+
+    String[] shortnames = shortForm.split("");
+    for (String letters : shortnames) {
+
+      for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
+        if (entry.getValue().shortName.equals(letters)) {
+
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   /**
@@ -301,11 +322,11 @@ public class LineParser {
       while (q.isEmpty() == false) {
         String current = q.remove();
 
-        // If it is named long form
-
         if (current.startsWith("-")
-            && (arguments.containsKey(current.substring(2)) || !getLongForm(current).equals(""))) {
-
+            && (arguments.containsKey(current.substring(2))
+                || !getLongForm(current.substring(1)).equals("")
+                || checkCombinedShortForms(current.substring(1)))) {
+          // If it is named long form
           if (current.substring(1, 2).equals("-")) {
 
             String value = q.peek();
@@ -329,19 +350,28 @@ public class LineParser {
             }
             // If optional is named shortform
           } else {
+
             String value = q.peek();
-            String longName = getLongForm(current);
-            Datatype type = arguments.get(longName).type;
-            if (arguments.get(longName).type == Datatype.BOOLEAN) {
-              arguments.get(longName).value = "true";
+            String longName = getLongForm(current.substring(1));
+
+            if (current.substring(1).length() > 1
+                || arguments.get(longName).type == Datatype.BOOLEAN) {
+              String[] flags = current.substring(1).split("");
+
+              for (String letter : flags) {
+                String individualLetter = getLongForm(letter);
+                arguments.get(individualLetter).value = "true";
+              }
+
             } else {
               // Remove from queue, get type.
-
+              Datatype type = arguments.get(longName).type;
               if (q.isEmpty()) {
                 throw new IllegalArgumentException("no value for " + longName);
               }
               checkArgumentsForTypeEquivalence(type, value);
-              if ((q.peek().startsWith("--") || q.peek().startsWith("-"))) {
+              if (((q.peek().startsWith("--") || q.peek().startsWith("-")))
+                  && checkCombinedShortForms(q.peek())) {
                 throw new IllegalArgumentException("no value for " + longName);
               }
               checkValueIsDiscrete(longName, value);
@@ -384,9 +414,44 @@ public class LineParser {
     int largestWord = "-h, --help".length();
     for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
       if (argumentNameByPosition.contains(entry.getKey()) == false) {
-        String variable = "--" + entry.getKey() + " " + entry.getKey();
-        if (variable.length() > largestWord) {
-          largestWord = variable.length();
+        String variable = "";
+        if (entry.getValue().type == Datatype.BOOLEAN) {
+          if (entry.getValue().shortName.length() > 0) {
+            variable =
+                "-"
+                    + entry.getValue().shortName
+                    + " "
+                    + entry.getKey().toUpperCase(Locale.getDefault())
+                    + ", "
+                    + "--"
+                    + entry.getKey()
+                    + " "
+                    + entry.getKey().toUpperCase(Locale.getDefault());
+          } else {
+            variable = "--" + entry.getKey();
+          }
+
+          if (variable.length() > largestWord) {
+            largestWord = variable.length();
+          }
+        } else {
+          if (entry.getValue().shortName.length() > 0) {
+            variable =
+                "-"
+                    + entry.getValue().shortName
+                    + " "
+                    + entry.getKey().toUpperCase(Locale.getDefault())
+                    + ", "
+                    + "--"
+                    + entry.getKey()
+                    + " "
+                    + entry.getKey().toUpperCase(Locale.getDefault());
+          } else {
+            variable = "--" + entry.getKey() + " " + entry.getKey();
+          }
+          if (variable.length() > largestWord) {
+            largestWord = variable.length();
+          }
         }
       } else {
         String variable = entry.getKey();
@@ -396,7 +461,6 @@ public class LineParser {
       }
     }
     int spaces = 0;
-    // Old code below
     for (int i = 0; i < argumentNameByPosition.size(); i++) {
       spaces = largestWord + 2;
       // 18 spaces + 14 spaces + argument help message
@@ -414,6 +478,8 @@ public class LineParser {
         type = "(integer)";
       } else if (arguments.get(argumentNameByPosition.get(i)).type == Datatype.FLOAT) {
         type = "(float)";
+      } else if (arguments.get(argumentNameByPosition.get(i)).type == Datatype.BOOLEAN) {
+        type = "";
       }
       buffer.append(type);
       spaces = spaces - type.length();
@@ -433,13 +499,42 @@ public class LineParser {
     }
     buffer.append("show this help message and exit");
 
-    for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
+    for (int i = 0; i < optionalArgument.size(); i++) {
       // 18 spaces + 14 spaces + argument help message + (default: value) (except for
       // -h/--help)
-      if (argumentNameByPosition.contains(entry.getKey()) == false) {
-        spaces = largestWord + 2;
-        String variable =
-            "--" + entry.getKey() + " " + entry.getKey().toUpperCase(Locale.getDefault());
+      String variable = "";
+      Argument entry = arguments.get(optionalArgument.get(i));
+      String name = optionalArgument.get(i);
+      spaces = largestWord + 2;
+      if (entry.type == Datatype.BOOLEAN) {
+        if (entry.shortName.length() > 0) {
+          variable = "-" + entry.shortName + ", " + "--" + name;
+
+        } else {
+          variable = "--" + name;
+        }
+        buffer.append("\n ");
+        buffer.append(variable);
+        spaces = spaces - variable.length();
+        for (int j = 0; j < spaces; j++) {
+          buffer.append(" ");
+        }
+        buffer.append(arguments.get(name).help);
+      } else {
+        if (entry.shortName.length() > 0) {
+          variable =
+              "-"
+                  + entry.shortName
+                  + " "
+                  + name.toUpperCase(Locale.getDefault())
+                  + ", "
+                  + "--"
+                  + name
+                  + " "
+                  + name.toUpperCase(Locale.getDefault());
+        } else {
+          variable = "--" + name + " " + name.toUpperCase(Locale.getDefault());
+        }
         buffer.append("\n ");
         buffer.append(variable);
         spaces = spaces - variable.length();
@@ -447,24 +542,31 @@ public class LineParser {
           buffer.append(" ");
         }
         spaces = 14;
+
         String type = "";
-        if (arguments.get(entry.getKey()).type == Datatype.STRING) {
+        if (arguments.get(name).type == Datatype.STRING) {
           type = "(string)";
-        } else if (arguments.get(entry.getKey()).type == Datatype.INTEGER) {
+        } else if (arguments.get(name).type == Datatype.INTEGER) {
           type = "(integer)";
-        } else if (arguments.get(entry.getKey()).type == Datatype.FLOAT) {
+        } else if (arguments.get(name).type == Datatype.FLOAT) {
           type = "(float)";
         }
+
         buffer.append(type);
         spaces = spaces - type.length();
         for (int j = 0; j < spaces; j++) {
           buffer.append(" ");
         }
+        if (arguments.get(name).type == Datatype.BOOLEAN) {
 
-        buffer.append(arguments.get(entry.getKey()).help + " ");
-        buffer.append("(default: " + arguments.get(entry.getKey()).value + ")");
+        } else {
+          buffer.append(entry.help + " ");
+        }
+
+        buffer.append("(default: " + arguments.get(name).value + ")");
       }
     }
+
     helpMessage += buffer;
 
     return helpMessage;
