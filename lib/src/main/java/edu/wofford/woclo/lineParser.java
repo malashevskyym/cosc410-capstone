@@ -5,6 +5,7 @@ import java.util.*;
 public class LineParser {
   private Map<String, Argument> arguments = new HashMap<String, Argument>();
   private List<String> argumentNameByPosition = new ArrayList<String>();
+  private List<String> optionalArgument = new ArrayList<String>();
   private String usageInfo;
   private String programInfo;
 
@@ -118,6 +119,7 @@ public class LineParser {
     } else {
       arguments.get(name).setValue("");
     }
+    optionalArgument.add(name);
   }
 
   /**
@@ -130,6 +132,7 @@ public class LineParser {
   public void addOptionalArgument(String name, Datatype type, String defaultValue) {
     arguments.put(name, new Argument(type));
     arguments.get(name).setValue(defaultValue);
+    optionalArgument.add(name);
   }
 
   /**
@@ -143,6 +146,7 @@ public class LineParser {
   public void addOptionalArgument(String name, Datatype type, String defaultValue, String help) {
     arguments.put(name, new Argument(type, help));
     arguments.get(name).setValue(defaultValue);
+    optionalArgument.add(name);
   }
 
   public void addOptionalArgument(
@@ -150,6 +154,7 @@ public class LineParser {
     arguments.put(name, new Argument(type, help));
     arguments.get(name).setValue(defaultValue);
     arguments.get(name).shortName = shortName;
+    optionalArgument.add(name);
   }
 
   public void addOptionalArgument(
@@ -164,6 +169,7 @@ public class LineParser {
     arguments.get(name).shortName = shortName;
     checkDiscreteValueTypes(arguments.get(name).type, discreteValues);
     arguments.get(name).discreteValues = discreteValues;
+    optionalArgument.add(name);
   }
 
   /**
@@ -408,13 +414,41 @@ public class LineParser {
     int largestWord = "-h, --help".length();
     for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
       if (argumentNameByPosition.contains(entry.getKey()) == false) {
+        String variable = "";
         if (entry.getValue().type == Datatype.BOOLEAN) {
-          String variable = "--" + entry.getKey();
+          if (entry.getValue().shortName.length() > 0) {
+            variable =
+                "-"
+                    + entry.getValue().shortName
+                    + " "
+                    + entry.getKey().toUpperCase(Locale.getDefault())
+                    + ", "
+                    + "--"
+                    + entry.getKey()
+                    + " "
+                    + entry.getKey().toUpperCase(Locale.getDefault());
+          } else {
+            variable = "--" + entry.getKey();
+          }
+
           if (variable.length() > largestWord) {
             largestWord = variable.length();
           }
         } else {
-          String variable = "--" + entry.getKey() + " " + entry.getKey();
+          if (entry.getValue().shortName.length() > 0) {
+            variable =
+                "-"
+                    + entry.getValue().shortName
+                    + " "
+                    + entry.getKey().toUpperCase(Locale.getDefault())
+                    + ", "
+                    + "--"
+                    + entry.getKey()
+                    + " "
+                    + entry.getKey().toUpperCase(Locale.getDefault());
+          } else {
+            variable = "--" + entry.getKey() + " " + entry.getKey();
+          }
           if (variable.length() > largestWord) {
             largestWord = variable.length();
           }
@@ -444,6 +478,8 @@ public class LineParser {
         type = "(integer)";
       } else if (arguments.get(argumentNameByPosition.get(i)).type == Datatype.FLOAT) {
         type = "(float)";
+      } else if (arguments.get(argumentNameByPosition.get(i)).type == Datatype.BOOLEAN) {
+        type = "";
       }
       buffer.append(type);
       spaces = spaces - type.length();
@@ -463,49 +499,74 @@ public class LineParser {
     }
     buffer.append("show this help message and exit");
 
-    for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
+    for (int i = 0; i < optionalArgument.size(); i++) {
       // 18 spaces + 14 spaces + argument help message + (default: value) (except for
       // -h/--help)
-      if (argumentNameByPosition.contains(entry.getKey()) == false) {
-        spaces = largestWord + 2;
-        if (entry.getValue().type == Datatype.BOOLEAN) {
-          String variable = "--" + entry.getKey();
-          buffer.append("\n ");
-          buffer.append(variable);
-          spaces = spaces - variable.length();
-          for (int j = 0; j < spaces; j++) {
-            buffer.append(" ");
-          }
-          buffer.append(arguments.get(entry.getKey()).value);
-        } else {
-          String variable =
-              "--" + entry.getKey() + " " + entry.getKey().toUpperCase(Locale.getDefault());
-          buffer.append("\n ");
-          buffer.append(variable);
-          spaces = spaces - variable.length();
-          for (int j = 0; j < spaces; j++) {
-            buffer.append(" ");
-          }
-          spaces = 14;
-          String type = "";
-          if (arguments.get(entry.getKey()).type == Datatype.STRING) {
-            type = "(string)";
-          } else if (arguments.get(entry.getKey()).type == Datatype.INTEGER) {
-            type = "(integer)";
-          } else if (arguments.get(entry.getKey()).type == Datatype.FLOAT) {
-            type = "(float)";
-          }
-          buffer.append(type);
-          spaces = spaces - type.length();
-          for (int j = 0; j < spaces; j++) {
-            buffer.append(" ");
-          }
+      String variable = "";
+      Argument entry = arguments.get(optionalArgument.get(i));
+      String name = optionalArgument.get(i);
+      spaces = largestWord + 2;
+      if (entry.type == Datatype.BOOLEAN) {
+        if (entry.shortName.length() > 0) {
+          variable = "-" + entry.shortName + ", " + "--" + name;
 
-          buffer.append(arguments.get(entry.getKey()).help + " ");
-          buffer.append("(default: " + arguments.get(entry.getKey()).value + ")");
+        } else {
+          variable = "--" + name;
         }
+        buffer.append("\n ");
+        buffer.append(variable);
+        spaces = spaces - variable.length();
+        for (int j = 0; j < spaces; j++) {
+          buffer.append(" ");
+        }
+        buffer.append(arguments.get(name).help);
+      } else {
+        if (entry.shortName.length() > 0) {
+          variable =
+              "-"
+                  + entry.shortName
+                  + " "
+                  + name.toUpperCase(Locale.getDefault())
+                  + ", "
+                  + "--"
+                  + name
+                  + " "
+                  + name.toUpperCase(Locale.getDefault());
+        } else {
+          variable = "--" + name + " " + name.toUpperCase(Locale.getDefault());
+        }
+        buffer.append("\n ");
+        buffer.append(variable);
+        spaces = spaces - variable.length();
+        for (int j = 0; j < spaces; j++) {
+          buffer.append(" ");
+        }
+        spaces = 14;
+
+        String type = "";
+        if (arguments.get(name).type == Datatype.STRING) {
+          type = "(string)";
+        } else if (arguments.get(name).type == Datatype.INTEGER) {
+          type = "(integer)";
+        } else if (arguments.get(name).type == Datatype.FLOAT) {
+          type = "(float)";
+        }
+
+        buffer.append(type);
+        spaces = spaces - type.length();
+        for (int j = 0; j < spaces; j++) {
+          buffer.append(" ");
+        }
+        if (arguments.get(name).type == Datatype.BOOLEAN) {
+
+        } else {
+          buffer.append(entry.help + " ");
+        }
+
+        buffer.append("(default: " + arguments.get(name).value + ")");
       }
     }
+
     helpMessage += buffer;
 
     return helpMessage;

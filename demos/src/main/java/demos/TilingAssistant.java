@@ -12,8 +12,13 @@ public class TilingAssistant {
   Float groutGap = 0.5f;
   String system = "in"; // can be inches or centimeters if "metric" is specified
   boolean fullOnly = false;
+  String result;
 
   public TilingAssistant() {}
+
+  public String getResult() {
+    return result;
+  }
 
   public void setFullOnly(boolean t) {
     if (t) {
@@ -207,6 +212,7 @@ public class TilingAssistant {
               + system
               + ")";
     }
+    result = build;
     return build;
   }
 

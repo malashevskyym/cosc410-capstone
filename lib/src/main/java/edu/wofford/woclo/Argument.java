@@ -5,10 +5,10 @@ import edu.wofford.woclo.LineParser.Datatype;
 public class Argument {
 
   Datatype type;
-  String value = "";
-  String help = "";
-  String shortName = "";
-  String[] discreteValues = new String[] {};
+  protected String value = "";
+  protected String help = "";
+  protected String shortName = "";
+  protected String[] discreteValues = new String[] {};
 
   public Argument(Datatype type) {
     this.type = type;

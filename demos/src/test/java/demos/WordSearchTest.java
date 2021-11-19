@@ -115,12 +115,29 @@ public class WordSearchTest {
     assertEquals("tzo not found", wordResult);
   }
 
-  // @Test
-  // public void testMain() {
-  // WordSearch t = new WordSearch();
-  // t.main(new String[] {"soptwerhomnioroeroer", "senior", "--height", "4"});
-  // assertEquals("s:1,1 e:2,1 n:3,1 i:3,2 o:3,3 r:3,4", t.getFoundCoordinate());
-  // }
+  @Test
+  public void testMain() throws IOException {
+    WordSearch t = new WordSearch();
+    String[] args = new String[] {"soptwerhomnioroeroer", "senior", "--height", "4"};
+    t.main(args);
+  }
+
+  @Test
+  public void testMainGridDimensions() throws IOException {
+    WordSearch t = new WordSearch();
+    String[] args =
+        new String[] {
+          "--width", "4", "softwaeskqermilvcqputeromocertpuiopprogram", "--height", "5", "retro"
+        };
+    t.main(args);
+  }
+
+  @Test
+  public void testMainGridNoValue() throws IOException {
+    WordSearch t = new WordSearch();
+    String[] args = new String[] {"soptwerhomnioroeroer", "--width", "noroom"};
+    t.main(args);
+  }
 
   @Test
   public void testCoordinateNotFound() {
