@@ -12,8 +12,14 @@ public class TilingAssistant {
   Float groutGap = 0.5f;
   String system = "in"; // can be inches or centimeters if "metric" is specified
   boolean fullOnly = false;
+  String result;
 
-  public TilingAssistant() {}
+  public TilingAssistant() {
+  }
+
+  public String getResult() {
+    return result;
+  }
 
   public void setFullOnly(boolean t) {
     if (t) {
@@ -119,112 +125,34 @@ public class TilingAssistant {
       totalLeftRight = checkLengthFullFit() * 2f;
     }
     if (fullOnly == true || checkLeftRighPartial() < 0 && checkTopBottomPartial() < 0) {
-      build =
-          ""
-              + Math.round(totalFullTiles)
-              + ":("
-              + lengthTile
-              + " x "
-              + widthTile
-              + " "
-              + system
-              + ")";
+      build = "" + Math.round(totalFullTiles) + ":(" + lengthTile + " x " + widthTile + " " + system + ")";
     } else if (lr == 0) {
-      build =
-          ""
-              + Math.round(totalFullTiles)
-              + ":("
-              + lengthTile
-              + " x "
-              + widthTile
-              + " "
-              + system
-              + ")"
-              + " "
-              + Math.round(totalLeftRight)
-              + ":("
-              + lengthTile
-              + " x "
-              + checkLeftRighPartial()
-              + " "
-              + system
-              + ")";
+      build = "" + Math.round(totalFullTiles) + ":(" + lengthTile + " x " + widthTile + " " + system + ")" + " "
+          + Math.round(totalLeftRight) + ":(" + lengthTile + " x " + checkLeftRighPartial() + " " + system + ")";
     } else if (wr == 0) {
-      build =
-          ""
-              + Math.round(totalFullTiles)
-              + ":("
-              + lengthTile
-              + " x "
-              + widthTile
-              + " "
-              + system
-              + ")"
-              + " "
-              + Math.round(totalTopBottom)
-              + ":("
-              + checkTopBottomPartial()
-              + " x "
-              + widthTile
-              + " "
-              + system
-              + ")";
+      build = "" + Math.round(totalFullTiles) + ":(" + lengthTile + " x " + widthTile + " " + system + ")" + " "
+          + Math.round(totalTopBottom) + ":(" + checkTopBottomPartial() + " x " + widthTile + " " + system + ")";
     } else {
-      build =
-          ""
-              + Math.round(totalFullTiles)
-              + ":("
-              + lengthTile
-              + " x "
-              + widthTile
-              + " "
-              + system
-              + ")"
-              + " "
-              + Math.round(totalTopBottom)
-              + ":("
-              + checkTopBottomPartial()
-              + " x "
-              + widthTile
-              + " "
-              + system
-              + ")"
-              + " "
-              + Math.round(totalLeftRight)
-              + ":("
-              + lengthTile
-              + " x "
-              + checkLeftRighPartial()
-              + " "
-              + system
-              + ") "
-              + 4
-              + ":("
-              + checkTopBottomPartial()
-              + " x "
-              + checkLeftRighPartial()
-              + " "
-              + system
-              + ")";
+      build = "" + Math.round(totalFullTiles) + ":(" + lengthTile + " x " + widthTile + " " + system + ")" + " "
+          + Math.round(totalTopBottom) + ":(" + checkTopBottomPartial() + " x " + widthTile + " " + system + ")" + " "
+          + Math.round(totalLeftRight) + ":(" + lengthTile + " x " + checkLeftRighPartial() + " " + system + ") " + 4
+          + ":(" + checkTopBottomPartial() + " x " + checkLeftRighPartial() + " " + system + ")";
     }
+    result = build;
     return build;
   }
 
   public static void main(String... args) {
-    LineParser parser =
-        new LineParser(
-            "java TilingAssistant [-h] [-s TILESIZE] [-g GROUTGAP] [-m] [-f] length width",
-            "Calculate the tiles required to tile a room. All units are inches.");
+    LineParser parser = new LineParser("java TilingAssistant [-h] [-s TILESIZE] [-g GROUTGAP] [-m] [-f] length width",
+        "Calculate the tiles required to tile a room. All units are inches.");
     parser.addRequiredArgument("length", LineParser.Datatype.FLOAT, "the length of the room");
     parser.addRequiredArgument("width", LineParser.Datatype.FLOAT, "the width of the room");
-    parser.addOptionalArgument(
-        "tilesize", LineParser.Datatype.FLOAT, "6.0", "the size of the square tile", "s");
-    parser.addOptionalArgument(
-        "groutgap", LineParser.Datatype.FLOAT, "0.5", "the width of the grout gap", "g");
-    parser.addOptionalArgument(
-        "metric", LineParser.Datatype.BOOLEAN, "false", "use centimeters instead of inches", "m");
-    parser.addOptionalArgument(
-        "fullonly", LineParser.Datatype.BOOLEAN, "false", "show only the full tiles required", "f");
+    parser.addOptionalArgument("tilesize", LineParser.Datatype.FLOAT, "6.0", "the size of the square tile", "s");
+    parser.addOptionalArgument("groutgap", LineParser.Datatype.FLOAT, "0.5", "the width of the grout gap", "g");
+    parser.addOptionalArgument("metric", LineParser.Datatype.BOOLEAN, "false", "use centimeters instead of inches",
+        "m");
+    parser.addOptionalArgument("fullonly", LineParser.Datatype.BOOLEAN, "false", "show only the full tiles required",
+        "f");
 
     try {
       parser.parse(args);

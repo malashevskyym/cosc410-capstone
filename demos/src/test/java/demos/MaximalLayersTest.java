@@ -2,6 +2,7 @@ package demos;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.*;
 import org.junit.jupiter.api.Test;
 
 class MaximalLayersTest {
@@ -61,6 +62,12 @@ class MaximalLayersTest {
     assertEquals("1:(4,9)(15,7) 2:(1,5)(5,5)(10,2) 3:(2,3)", maxLayerTest.layers);
   }
 
+  @Test
+  public void testMain() throws IOException {
+    String[] args = new String[] {"1,5,5,5,4,9,10,2,2,3,15,7", "--sortedX", "--sortedY"};
+    MaximalLayers maxLayerTest = new MaximalLayers(args[0], true, true);
+    maxLayerTest.main(args);
+  }
   // @Test
   // public void testUnpairedXCoordinate() {
   // String[] testInput = new String[] {"5,5,4,9,10,2,2,3,15"};
