@@ -2,7 +2,6 @@ package demos;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.*;
 import org.junit.jupiter.api.Test;
 
 class MaximalLayersTest {
@@ -19,7 +18,7 @@ class MaximalLayersTest {
     String[] testInput = new String[] {"5,5,4,9,10,2"};
     MaximalLayers maxLayerTest = new MaximalLayers(testInput[0], false, false);
 
-    assertEquals("1:(4,9)(10,2) 2:(5,5)", maxLayerTest.layers);
+    assertEquals("1:(5,5)(4,9)(10,2)", maxLayerTest.layers);
   }
 
   @Test
@@ -63,26 +62,29 @@ class MaximalLayersTest {
   }
 
   @Test
-  public void testMain() throws IOException {
-    String[] args = new String[] {"1,5,5,5,4,9,10,2,2,3,15,7", "--sortedX", "--sortedY"};
-    MaximalLayers maxLayerTest = new MaximalLayers(args[0], true, true);
-    maxLayerTest.main(args);
+  public void testMain() {
+    String[] testInput = new String[] {"1,5,5,5,4,9,10,2,2,3,15,7"};
+    MaximalLayers maxLayerTest = new MaximalLayers(testInput[0], false, false);
+    maxLayerTest.main("1,5,5,5,4,9,10,2,2,3,15,7");
+
+    assertEquals("1:(4,9)(15,7) 2:(1,5)(5,5)(10,2) 3:(2,3)", maxLayerTest.layers);
   }
-  // @Test
-  // public void testUnpairedXCoordinate() {
-  // String[] testInput = new String[] {"5,5,4,9,10,2,2,3,15"};
-  // MaximalLayers maxLayerTest = new MaximalLayers(testInput[0], false, false);
 
-  // assertEquals("MaximalLayers error: 15 is an unpaired x coordinate",
-  // maxLayerTest.error);
-  // }
+  @Test
+  public void testMainParseError() {
+    String[] testInput = new String[] {"1,5,5,5,4,9,10,2,2,3,15,7"};
+    MaximalLayers maxLayerTest = new MaximalLayers(testInput[0], false, false);
+    maxLayerTest.main("1,5,5,5,x,9,10,2,2,3,15,7");
 
-  // @Test
-  // public void testNotOfTypeInteger() {
-  // String[] testInput = new String[] {"5,5,4,9,10,x,2,3,15,7"};
-  // MaximalLayers maxLayerTest = new MaximalLayers(testInput[0], false, false);
+    assertEquals("1:(4,9)(15,7) 2:(1,5)(5,5)(10,2) 3:(2,3)", maxLayerTest.layers);
+  }
 
-  // assertEquals("MaximalLayers error: the value x is not of type integer",
-  // maxLayerTest.error);
-  // }
+  @Test
+  public void testMainPairError() {
+    String[] testInput = new String[] {"1,5,5,5,4,9,10,2,2,3,15,7"};
+    MaximalLayers maxLayerTest = new MaximalLayers(testInput[0], false, false);
+    maxLayerTest.main("1,5,5,5,x,9,10,2,2,3,15");
+
+    assertEquals("1:(4,9)(15,7) 2:(1,5)(5,5)(10,2) 3:(2,3)", maxLayerTest.layers);
+  }
 }

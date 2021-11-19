@@ -466,4 +466,83 @@ public class LineParserTest {
           Test.parse(test1);
         });
   }
+
+  @Test
+  public void testShortNameStringDashhShortForm() {
+    LineParser Test = new LineParser();
+    Test.addRequiredArgument("X", LineParser.Datatype.FLOAT, "String to Float");
+    Test.addOptionalArgument("type", Datatype.BOOLEAN, "false", "displays Type", "t");
+
+    String[] test1 = new String[] {"2.0", "-t", "-h"};
+    Test.parse(test1);
+    boolean t = false;
+    boolean f = Test.getArgument("type");
+    assertEquals(f, t);
+  }
+
+  @Test
+  public void testShortNameStringDashh() {
+    LineParser Test = new LineParser();
+    Test.addRequiredArgument("X", LineParser.Datatype.FLOAT, "String to Float");
+    Test.addOptionalArgument("type", Datatype.BOOLEAN, "false", "displays Type");
+
+    String[] test1 = new String[] {"2.0", "-t", "-h"};
+    Test.parse(test1);
+    boolean t = false;
+    boolean f = Test.getArgument("type");
+    assertEquals(f, t);
+  }
+
+  @Test
+  public void testMultipleShortForms() {
+    LineParser Test = new LineParser();
+    Test.addRequiredArgument("X", LineParser.Datatype.FLOAT, "String to Float");
+    Test.addOptionalArgument("type", Datatype.BOOLEAN, "false", "displays Type", "t");
+    Test.addOptionalArgument("variety", Datatype.BOOLEAN, "false", "displays Type", "v");
+
+    String[] test1 = new String[] {"2.0", "-tv"};
+    Test.parse(test1);
+    boolean t = true;
+    boolean f = Test.getArgument("type");
+    assertEquals(f, t);
+  }
+
+  @Test
+  public void addOptionalValueBoolean() {
+    LineParser Test = new LineParser();
+
+    Test.addOptionalArgument("type", Datatype.BOOLEAN);
+
+    String[] test1 = new String[] {"--type"};
+    Test.parse(test1);
+    boolean t = true;
+    boolean f = Test.getArgument("type");
+    assertEquals(f, t);
+  }
+
+  @Test
+  public void addOptionalValueInt() {
+    LineParser Test = new LineParser();
+
+    Test.addOptionalArgument("type", Datatype.INTEGER);
+
+    String[] test1 = new String[] {"--type", "2"};
+    Test.parse(test1);
+    Integer t = 2;
+    Integer f = Test.getArgument("type");
+    assertEquals(t, f);
+  }
+
+  @Test
+  public void addOptionalValueFloat() {
+    LineParser Test = new LineParser();
+
+    Test.addOptionalArgument("type", Datatype.FLOAT);
+
+    String[] test1 = new String[] {"--type", "2.0"};
+    Test.parse(test1);
+    Float t = (float) 2.0;
+    Float f = Test.getArgument("type");
+    assertEquals(t, f);
+  }
 }

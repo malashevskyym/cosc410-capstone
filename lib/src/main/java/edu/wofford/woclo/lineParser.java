@@ -149,6 +149,15 @@ public class LineParser {
     optionalArgument.add(name);
   }
 
+  /**
+   * Request an argument that will be optional in the command line.
+   *
+   * @param name The name of the argument (what its called).
+   * @param type The data type of the argument (float, int, or string).
+   * @param defaultValue The default value for the optional parameter.
+   * @param help Any additional descriptive help information about the argument.
+   * @param shortName Shortform description of argument.
+   */
   public void addOptionalArgument(
       String name, Datatype type, String defaultValue, String help, String shortName) {
     arguments.put(name, new Argument(type, help));
@@ -157,6 +166,16 @@ public class LineParser {
     optionalArgument.add(name);
   }
 
+  /**
+   * Request an argument that will be optional in the command line.
+   *
+   * @param name The name of the argument (what its called).
+   * @param type The data type of the argument (float, int, or string).
+   * @param defaultValue The default value for the optional parameter.
+   * @param help Any additional descriptive help information about the argument.
+   * @param shortName Shortform description of argument.
+   * @param discreteValues Restricted values of the argument.
+   */
   public void addOptionalArgument(
       String name,
       Datatype type,
@@ -202,12 +221,12 @@ public class LineParser {
     return (T) arguments.get(identifier).type.parseType(value);
   }
 
-  // TODO: Make sure that user does not pass in named/optional arguments that DO
-  // NOT exist.
-
   /**
    * Checks that the arguments passed into the command line can be parsed into their specified
    * types.
+   *
+   * @param type Datatype of argument.
+   * @param value Value of argument being passed in.
    */
   private void checkArgumentsForTypeEquivalence(Datatype type, String value) {
     if (type == Datatype.FLOAT) {
@@ -288,6 +307,12 @@ public class LineParser {
     return s;
   }
 
+  /**
+   * Checks if a shortform is a valid shortform.
+   *
+   * @param shortForm The shortform to be checked.
+   * @return True or false if the shortform is valid.
+   */
   private boolean checkCombinedShortForms(String shortForm) {
 
     String[] shortnames = shortForm.split("");
@@ -519,7 +544,7 @@ public class LineParser {
         for (int j = 0; j < spaces; j++) {
           buffer.append(" ");
         }
-        buffer.append(arguments.get(name).help);
+        buffer.append(entry.help);
       } else {
         if (entry.shortName.length() > 0) {
           variable =
