@@ -122,9 +122,7 @@ public class HeatedField {
 
   public static void main(String... args) {
     LineParser parser =
-        new LineParser(
-            "java HeatedField [-h] [-t TEMPERATURE] [-m MINUTES] north south east west x y",
-            "Calculate the internal cell temperature.");
+        new LineParser("java HeatedField", "Calculate the internal cell temperature.");
     parser.addRequiredArgument(
         "north", LineParser.Datatype.FLOAT, "the temperature of the north edge");
     parser.addRequiredArgument(

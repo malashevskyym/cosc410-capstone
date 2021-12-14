@@ -10,10 +10,7 @@ public class MaximalLayers {
 
   public static void main(String... args) {
 
-    LineParser parser =
-        new LineParser(
-            "java MaximalLayers [-h] [--sortedX] [--sortedY] points",
-            "Sort the points into layers.");
+    LineParser parser = new LineParser("java MaximalLayers", "Sort the points into layers.");
     parser.addRequiredArgument("points", LineParser.Datatype.STRING, "the data points");
     parser.addOptionalArgument(
         "sortedX", LineParser.Datatype.BOOLEAN, "false", "sort layers by x coordinate");

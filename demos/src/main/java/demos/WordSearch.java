@@ -156,10 +156,7 @@ public class WordSearch {
   }
 
   public static void main(String[] args) {
-    LineParser testLine =
-        new LineParser(
-            "java WordSearch [-h] [--width WIDTH] [--height HEIGHT] grid target",
-            "Find a target word in a grid.");
+    LineParser testLine = new LineParser("java WordSearch", "Find a target word in a grid.");
     testLine.addRequiredArgument("grid", LineParser.Datatype.STRING, "the grid to search");
     testLine.addRequiredArgument("target", LineParser.Datatype.STRING, "the target word");
     testLine.addOptionalArgument("width", LineParser.Datatype.INTEGER, "5", "the grid width");

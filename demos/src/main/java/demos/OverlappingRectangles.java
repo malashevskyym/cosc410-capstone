@@ -15,7 +15,7 @@ public class OverlappingRectangles {
   public static void main(String... args) {
     LineParser parse =
         new LineParser(
-            "java OverlappingRectangles [-h] x1 y1 x2 y2 x3 y3 x4 y4",
+            "java OverlappingRectangles",
             "Determine the overlap and total area of two rectangles.");
     parse.addRequiredArgument("x1", Datatype.INTEGER, "lower-left x for rectangle 1");
     parse.addRequiredArgument("y1", Datatype.INTEGER, "lower-left y for rectangle 1");

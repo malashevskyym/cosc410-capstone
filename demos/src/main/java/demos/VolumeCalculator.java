@@ -4,28 +4,32 @@ import edu.wofford.woclo.*;
 
 public class VolumeCalculator {
 
-  double volume;
-  double length;
-  double width;
-  double heigth;
+  Double volume;
+  Double length;
+  Double width;
+  Double heigth;
   String shape = "box";
   int precision = 4;
 
-  public VolumeCalculator(double length, double width, double heigth) {
-    this.length = length;
-    this.width = width;
-    this.heigth = heigth;
+  public VolumeCalculator(Float length, Float width, Float heigth) {
+
+    this.length = (double) length;
+    this.width = (double) width;
+    this.heigth = (double) heigth;
   }
 
   public void setShape(String shape) {
+
     this.shape = shape;
   }
 
   public String getShape() {
+
     return shape;
   }
 
   public void setPrecision(int precision) {
+
     this.precision = precision;
   }
 
@@ -46,6 +50,7 @@ public class VolumeCalculator {
   }
 
   public double calcVolume() {
+
     if (shape.contentEquals("box")) {
       volume = length * width * heigth;
     } else if (shape.contentEquals("pyramid")) {
@@ -59,17 +64,33 @@ public class VolumeCalculator {
   }
 
   public static void main(String... args) {
-    LineParser parser = new LineParser();
-    parser.addArgsFromFile(
-        "<?xml version=\"1.0\"?><arguments><positionalArgs><positional><type>float</type><description>the length of the volume</description><name>length</name></positional><positional><type>float</type><name>width</name><description>the width of the volume</description></positional><positional><description>the height of the volume</description><name>height</name><type>float</type></positional></positionalArgs><namedArgs><named><description>the type of volume</description><shortname>t</shortname><type>string</type><name>type</name><restrictions><restriction>box</restriction><restriction>pyramid</restriction><restriction>ellipsoid</restriction></restrictions><default><value>box</value></default></named><named><default><value>4</value></default><type>integer</type><description>the maximum number of decimal places for the volume</description><name>precision</name><shortname>p</shortname></named></namedArgs></arguments>");
-    try {
-      parser.parse(args);
-    } catch (Exception e) {
-      System.out.println(e);
+    LineParser parser = new LineParser("java VolumeCalculator", "Calculate the volume.");
+    String xml = args[0];
+    String[] Argument = new String[args.length - 1];
+    for (int i = 1; i < args.length; i++) {
+      Argument[i - 1] = args[i];
     }
-    VolumeCalculator t = new VolumeCalculator(2, 5, 3);
-    t.setShape("ellipsoid");
-    t.setPrecision(3);
-    System.out.println(t.calcVolume());
+
+    try {
+      parser.addArgsFromString(xml);
+      parser.parse(Argument);
+      Float width = parser.getArgument("width");
+      Float length = parser.getArgument("length");
+      Float height = parser.getArgument("height");
+      VolumeCalculator t = new VolumeCalculator(length, width, height);
+      String type = parser.getArgument("type");
+      Integer precision = parser.getArgument("precision");
+      System.out.println("shape: " + type);
+      System.out.println("precision: " + precision);
+      t.setShape(type);
+      t.setPrecision(precision);
+      System.out.println(t.calcVolume());
+    } catch (HelpException e) {
+      System.out.println(e.getMessage());
+    } catch (InvalidXMLException e) {
+      System.out.println("VolumeCalculator error: " + e.getMessage());
+    } catch (Exception e) {
+      System.out.println("VolumeCalculator error: " + e.getMessage());
+    }
   }
 }

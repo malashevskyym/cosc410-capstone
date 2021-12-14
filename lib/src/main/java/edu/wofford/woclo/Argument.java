@@ -27,6 +27,22 @@ public class Argument {
     this.value = value;
   }
 
+  // {box, pyramid, ellipsoid}
+  public String getDiscreteAsString() {
+    String s = "{";
+    StringBuffer buf = new StringBuffer();
+    for (int i = 0; i < discreteValues.length; i++) {
+      if (i + 1 == discreteValues.length) {
+        buf.append(discreteValues[i]);
+      } else {
+        buf.append(discreteValues[i] + ", ");
+      }
+    }
+    s = s + buf;
+    s = s + "} ";
+    return s;
+  }
+
   // <default>
   // <value>4</value>
   // </default>

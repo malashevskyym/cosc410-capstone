@@ -8,6 +8,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * This program parses command line arguemnts. A required argument must appear in the command line
@@ -109,7 +110,7 @@ public class LineParser {
    *
    * @param filename
    */
-  public void addArgsFromFile(String Filename) {
+  public void addArgsFromString(String Filename) {
     try {
       // Building instance of root node
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -125,7 +126,12 @@ public class LineParser {
         Element element = (Element) node;
 
         String strType = element.getElementsByTagName("type").item(0).getTextContent();
-        String description = element.getElementsByTagName("description").item(0).getTextContent();
+        String description = "";
+        try {
+          description = element.getElementsByTagName("description").item(0).getTextContent();
+        } catch (NullPointerException e) {
+
+        }
         String name = element.getElementsByTagName("name").item(0).getTextContent();
         Datatype type = Datatype.STRING;
         if (strType.equals("float")) {
@@ -148,7 +154,12 @@ public class LineParser {
         String description = element.getElementsByTagName("description").item(0).getTextContent();
         String name = element.getElementsByTagName("name").item(0).getTextContent();
 
-        String shortName = element.getElementsByTagName("shortname").item(0).getTextContent();
+        String shortName = "";
+        try {
+          shortName = element.getElementsByTagName("shortname").item(0).getTextContent();
+        } catch (NullPointerException e) {
+
+        }
 
         String defaultVal = element.getElementsByTagName("default").item(0).getTextContent().trim();
         String[] restrictionsArr = new String[0];
@@ -181,8 +192,14 @@ public class LineParser {
           addOptionalArgument(name, type, defaultVal, description, shortName);
         }
       }
-    } catch (Exception e) {
-      System.out.println(e);
+    } catch (SAXException e) {
+      throw new InvalidXMLException();
+    } catch (NullPointerException e) {
+      throw new InvalidXMLException();
+    } catch (ParserConfigurationException e) {
+      throw new InvalidXMLException();
+    } catch (IOException e) {
+      throw new InvalidXMLException();
     }
   }
 
@@ -192,35 +209,52 @@ public class LineParser {
    *
    * @param filename Name of xml file to be constructed.
    */
-  public void createXmlFile(String filename) throws IOException {
-    new File(filename + ".xml");
-    FileWriter myWriter = new FileWriter(filename + ".xml");
-    myWriter.write("<?xml version=\"1.0\"?>\n");
-    myWriter.write("<arguments>\n");
+  public void createXmlFile(String filename) {
+    new File(filename);
+    Writer myWriter = null;
+    try {
+      myWriter = new OutputStreamWriter(new FileOutputStream(filename), "UTF-8");
+      myWriter.write("<?xml version=\"1.0\"?>\n");
+      myWriter.write("<arguments>\n");
 
-    myWriter.write("<positionalArgs>\n");
-    for (int i = 0; i < argumentNameByPosition.size(); i++) {
-      myWriter.write("<positional>\n");
-      myWriter.write("<name>" + argumentNameByPosition.get(i) + "</name>\n");
+      myWriter.write("<positionalArgs>\n");
+      for (int i = 0; i < argumentNameByPosition.size(); i++) {
+        myWriter.write("<positional>\n");
+        myWriter.write("<name>" + argumentNameByPosition.get(i) + "</name>\n");
 
-      myWriter.write(getEntry(argumentNameByPosition.get(i)).toString());
+        myWriter.write(getEntry(argumentNameByPosition.get(i)).toString());
 
-      myWriter.write("</positional>\n");
+        myWriter.write("</positional>\n");
+      }
+      myWriter.write("</positionalArgs>\n");
+
+      myWriter.write("<namedArgs>\n");
+      for (int i = 0; i < optionalArgument.size(); i++) {
+        myWriter.write("<named>\n");
+        myWriter.write("<name>" + optionalArgument.get(i) + "</name>\n");
+        myWriter.write(getEntry(optionalArgument.get(i)).toString());
+
+        myWriter.write("</named>\n");
+      }
+      myWriter.write("</namedArgs>\n");
+
+      myWriter.write("</arguments>");
+      myWriter.close();
+
+    } catch (IOException e) {
+
+      System.out.println("An error occurred while writing to file");
+
+      e.printStackTrace();
+    } finally {
+      try {
+        if (myWriter != null) {
+          myWriter.close();
+        }
+      } catch (IOException e) {
+
+      }
     }
-    myWriter.write("</positionalArgs>\n");
-
-    myWriter.write("<namedArgs>\n");
-    for (int i = 0; i < optionalArgument.size(); i++) {
-      myWriter.write("<named>\n");
-      myWriter.write("<name>" + optionalArgument.get(i) + "</name>\n");
-      myWriter.write(getEntry(optionalArgument.get(i)).toString());
-
-      myWriter.write("</named>\n");
-    }
-    myWriter.write("</namedArgs>\n");
-
-    myWriter.write("</arguments>");
-    myWriter.close();
   }
 
   /**
@@ -698,6 +732,39 @@ public class LineParser {
    */
   // If you enjoy your sanity don't touch this function.
   private String constructHelpMessage() {
+    usageInfo = usageInfo + " [-h]";
+    StringBuffer bufs = new StringBuffer();
+    for (int i = 0; i < optionalArgument.size(); i++) {
+      if (getEntry(optionalArgument.get(i)).shortName.isEmpty()) {
+        if (getEntry(optionalArgument.get(i)).type == Datatype.BOOLEAN) {
+          bufs.append(" [--" + optionalArgument.get(i) + "]");
+        } else {
+          bufs.append(
+              " [--"
+                  + optionalArgument.get(i)
+                  + " "
+                  + optionalArgument.get(i).toUpperCase(Locale.getDefault())
+                  + "]");
+        }
+      } else {
+        if (getEntry(optionalArgument.get(i)).type == Datatype.BOOLEAN) {
+          bufs.append(" [-" + getEntry(optionalArgument.get(i)).shortName + "]");
+        } else {
+          bufs.append(
+              " [-"
+                  + getEntry(optionalArgument.get(i)).shortName
+                  + " "
+                  + optionalArgument.get(i).toUpperCase(Locale.getDefault())
+                  + "]");
+        }
+      }
+    }
+
+    for (int i = 0; i < argumentNameByPosition.size(); i++) {
+      bufs.append(" " + argumentNameByPosition.get(i));
+    }
+    usageInfo = usageInfo + bufs;
+
     String helpMessage = "usage: " + usageInfo + "\n\n" + programInfo + "\n\n";
 
     StringBuffer buffer = new StringBuffer();
@@ -754,7 +821,7 @@ public class LineParser {
     int spaces = 0;
     for (int i = 0; i < argumentNameByPosition.size(); i++) {
       spaces = largestWord + 2;
-      // 18 spaces + 14 spaces + argument help message
+
       spaces = spaces - argumentNameByPosition.get(i).length();
       buffer.append(" " + argumentNameByPosition.get(i));
       for (int j = 0; j < spaces; j++) {
@@ -791,8 +858,6 @@ public class LineParser {
     buffer.append("show this help message and exit");
 
     for (int i = 0; i < optionalArgument.size(); i++) {
-      // 18 spaces + 14 spaces + argument help message + (default: value) (except for
-      // -h/--help)
       String variable = "";
       Argument entry = arguments.get(optionalArgument.get(i));
       String name = optionalArgument.get(i);
@@ -853,7 +918,9 @@ public class LineParser {
         } else {
           buffer.append(entry.help + " ");
         }
-
+        if (entry.discreteValues.length > 0) {
+          buffer.append(entry.getDiscreteAsString());
+        }
         buffer.append("(default: " + arguments.get(name).value + ")");
       }
     }

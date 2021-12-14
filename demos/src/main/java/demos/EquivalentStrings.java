@@ -8,9 +8,7 @@ public class EquivalentStrings {
 
   public static void main(String... args) {
     LineParser parser =
-        new LineParser(
-            "java EquivalentStrings [-h] string1 string2",
-            "Determine if two strings are equivalent.");
+        new LineParser("java EquivalentStrings", "Determine if two strings are equivalent.");
     parser.addRequiredArgument("string1", LineParser.Datatype.STRING, "the first string");
     parser.addRequiredArgument("string2", LineParser.Datatype.STRING, "the second string");
 
