@@ -14,7 +14,8 @@ public class TilingAssistant {
   boolean fullOnly = false;
   String result;
 
-  public TilingAssistant() {}
+  public TilingAssistant() {
+  }
 
   public String getResult() {
     return result;
@@ -127,103 +128,98 @@ public class TilingAssistant {
       totalLeftRight = checkLengthFullFit() * 2f;
     }
     if (fullOnly == true || checkLeftRighPartial() < 0 && checkTopBottomPartial() < 0) {
-      build =
-          ""
-              + Math.round(totalFullTiles)
-              + ":("
-              + lengthTile
-              + " x "
-              + widthTile
-              + " "
-              + system
-              + ")";
+      build = ""
+          + Math.round(totalFullTiles)
+          + ":("
+          + lengthTile
+          + " x "
+          + widthTile
+          + " "
+          + system
+          + ")";
     } else if (lr == 0) {
-      build =
-          ""
-              + Math.round(totalFullTiles)
-              + ":("
-              + lengthTile
-              + " x "
-              + widthTile
-              + " "
-              + system
-              + ")"
-              + " "
-              + Math.round(totalLeftRight)
-              + ":("
-              + lengthTile
-              + " x "
-              + checkLeftRighPartial()
-              + " "
-              + system
-              + ")";
+      build = ""
+          + Math.round(totalFullTiles)
+          + ":("
+          + lengthTile
+          + " x "
+          + widthTile
+          + " "
+          + system
+          + ")"
+          + " "
+          + Math.round(totalLeftRight)
+          + ":("
+          + lengthTile
+          + " x "
+          + checkLeftRighPartial()
+          + " "
+          + system
+          + ")";
     } else if (wr == 0) {
-      build =
-          ""
-              + Math.round(totalFullTiles)
-              + ":("
-              + lengthTile
-              + " x "
-              + widthTile
-              + " "
-              + system
-              + ")"
-              + " "
-              + Math.round(totalTopBottom)
-              + ":("
-              + checkTopBottomPartial()
-              + " x "
-              + widthTile
-              + " "
-              + system
-              + ")";
+      build = ""
+          + Math.round(totalFullTiles)
+          + ":("
+          + lengthTile
+          + " x "
+          + widthTile
+          + " "
+          + system
+          + ")"
+          + " "
+          + Math.round(totalTopBottom)
+          + ":("
+          + checkTopBottomPartial()
+          + " x "
+          + widthTile
+          + " "
+          + system
+          + ")";
     } else {
-      build =
-          ""
-              + Math.round(totalFullTiles)
-              + ":("
-              + lengthTile
-              + " x "
-              + widthTile
-              + " "
-              + system
-              + ")"
-              + " "
-              + Math.round(totalTopBottom)
-              + ":("
-              + checkTopBottomPartial()
-              + " x "
-              + widthTile
-              + " "
-              + system
-              + ")"
-              + " "
-              + Math.round(totalLeftRight)
-              + ":("
-              + lengthTile
-              + " x "
-              + checkLeftRighPartial()
-              + " "
-              + system
-              + ") "
-              + 4
-              + ":("
-              + checkTopBottomPartial()
-              + " x "
-              + checkLeftRighPartial()
-              + " "
-              + system
-              + ")";
+      build = ""
+          + Math.round(totalFullTiles)
+          + ":("
+          + lengthTile
+          + " x "
+          + widthTile
+          + " "
+          + system
+          + ")"
+          + " "
+          + Math.round(totalTopBottom)
+          + ":("
+          + checkTopBottomPartial()
+          + " x "
+          + widthTile
+          + " "
+          + system
+          + ")"
+          + " "
+          + Math.round(totalLeftRight)
+          + ":("
+          + lengthTile
+          + " x "
+          + checkLeftRighPartial()
+          + " "
+          + system
+          + ") "
+          + 4
+          + ":("
+          + checkTopBottomPartial()
+          + " x "
+          + checkLeftRighPartial()
+          + " "
+          + system
+          + ")";
     }
     result = build;
     return build;
   }
 
   public static void main(String... args) {
-    LineParser parser =
-        new LineParser(
-            "java TilingAssistant",
-            "Calculate the tiles required to tile a room. All units are inches.");
+    LineParser parser = new LineParser(
+        "java TilingAssistant",
+        "Calculate the tiles required to tile a room. All units are inches.");
     parser.addRequiredArgument("length", LineParser.Datatype.FLOAT, "the length of the room");
     parser.addRequiredArgument("width", LineParser.Datatype.FLOAT, "the width of the room");
     parser.addOptionalArgument(
