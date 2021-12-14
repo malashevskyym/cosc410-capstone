@@ -166,33 +166,33 @@ public class WordSearch {
     testLine.addOptionalArgument("height", LineParser.Datatype.INTEGER, "5", "the grid height");
     try {
       testLine.parse(args);
-      if (testLine.detectHelp(args) == false) {
-        WordSearch test = new WordSearch();
-        test.setHeight(testLine.getArgument("height"));
-        test.setWidth(testLine.getArgument("width"));
-        test.setBoard(testLine.getArgument("grid"));
-        test.setWord(testLine.getArgument("target"));
-        test.findWord();
 
-        String wordResult = test.getFoundCoordinate();
-        if (test.getHeight() * test.getWidth() != test.getGrid().length()) {
-          System.out.println(
-              "WordSearch error: "
-                  + "grid dimensions ("
-                  + test.getWidth()
-                  + " x "
-                  + test.getHeight()
-                  + ") do not match grid length ("
-                  + test.getGrid().length()
-                  + ")");
-        } else {
-          System.out.println(wordResult);
-        }
+      WordSearch test = new WordSearch();
+      test.setHeight(testLine.getArgument("height"));
+      test.setWidth(testLine.getArgument("width"));
+      test.setBoard(testLine.getArgument("grid"));
+      test.setWord(testLine.getArgument("target"));
+      test.findWord();
+
+      String wordResult = test.getFoundCoordinate();
+      if (test.getHeight() * test.getWidth() != test.getGrid().length()) {
+        System.out.println(
+            "WordSearch error: "
+                + "grid dimensions ("
+                + test.getWidth()
+                + " x "
+                + test.getHeight()
+                + ") do not match grid length ("
+                + test.getGrid().length()
+                + ")");
+      } else {
+        System.out.println(wordResult);
       }
+
+    } catch (HelpException e) {
+      System.out.println(e.getMessage());
     } catch (Exception e) {
-      if (testLine.detectHelp(args) == false) {
-        System.out.println("WordSearch error: " + e.getMessage());
-      }
+      System.out.println("WordSearch error: " + e.getMessage());
     }
   }
 }

@@ -40,10 +40,10 @@ public class MaximalLayers {
       maximalLayers.findLayers();
 
       System.out.println(maximalLayers.layers);
-    } catch (IllegalArgumentException e) {
-      if (!parser.detectHelp(args)) {
-        System.out.println("MaximalLayers error: " + e.getMessage());
-      }
+    } catch (HelpException e) {
+      System.out.println(e.getMessage());
+    } catch (Exception e) {
+      System.out.println("MaximalLayers error: " + e.getMessage());
     }
   }
 

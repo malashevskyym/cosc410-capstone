@@ -28,24 +28,24 @@ public class OverlappingRectangles {
 
     try {
       parse.parse(args);
-      if (parse.detectHelp(args) == false) {
 
-        Integer[] values =
-            new Integer[] {
-              parse.getArgument("x1"),
-              parse.getArgument("y1"),
-              parse.getArgument("x2"),
-              parse.getArgument("y2"),
-              parse.getArgument("x3"),
-              parse.getArgument("y3"),
-              parse.getArgument("x4"),
-              parse.getArgument("y4")
-            };
+      Integer[] values =
+          new Integer[] {
+            parse.getArgument("x1"),
+            parse.getArgument("y1"),
+            parse.getArgument("x2"),
+            parse.getArgument("y2"),
+            parse.getArgument("x3"),
+            parse.getArgument("y3"),
+            parse.getArgument("x4"),
+            parse.getArgument("y4")
+          };
 
-        OverlappingRectangles Rectangles = new OverlappingRectangles(values);
+      OverlappingRectangles Rectangles = new OverlappingRectangles(values);
 
-        System.out.println(Rectangles.overlapArea + " " + Rectangles.totalArea);
-      }
+      System.out.println(Rectangles.overlapArea + " " + Rectangles.totalArea);
+    } catch (HelpException e) {
+      System.out.print(e.getMessage());
     } catch (Exception e) {
       System.out.println("OverlappingRectangles error: " + e.getMessage());
     }

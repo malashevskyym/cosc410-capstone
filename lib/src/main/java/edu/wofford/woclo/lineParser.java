@@ -1,7 +1,26 @@
 package edu.wofford.woclo;
 
+import java.io.*;
+import java.io.File;
 import java.util.*;
+import javax.xml.parsers.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.*;
+import org.xml.sax.InputSource;
 
+/**
+ * This program parses command line arguemnts. A required argument must appear in the command line
+ * in the position it was given. For example, if the user has created a new instance of lineparser
+ * called parse: If the user passes in parser.addRequiredArgument(height, Datatype.INTEGER);
+ * parser.addRequiredArgument(wight, Datatype.INTEGER); After the using calls
+ * parser.parse(commandline), A command line with the values ["1","2"] will set the value of height
+ * to 1 and width to 2. These values can be retreived through the method getArgument.
+ * parser.getArgument("height") will return 1. A command line with the values ["1"] will return an
+ * error. An optional value is a value that may or may not appear on the command line. Optional
+ * arguments can be added using addOptionalArgument() method and can be used as flags. The flag -h
+ * and --help will both halt parsing and print a help message.
+ */
 public class LineParser {
   private Map<String, Argument> arguments = new HashMap<String, Argument>();
   private List<String> argumentNameByPosition = new ArrayList<String>();
@@ -41,7 +60,13 @@ public class LineParser {
   public LineParser() {};
 
   /**
-   * Constructs an empty map of named arguments.
+   * Constructs an empty map of named arguments. Usage information describes program information,
+   * such as prupose and expected values. Usage information will appear at the top of a help
+   * message. For example: usage: java EquivalentStrings [-h] string1 string2
+   *
+   * <p>positional arguments: string1 (string) the first string string2 (string) the second string
+   *
+   * <p>named arguments: -h, --help show this help message and exit
    *
    * @param usageInfo This is for usage information about the program.
    */
@@ -50,7 +75,14 @@ public class LineParser {
   }
 
   /**
-   * Constructs an empty map of named arguments.
+   * Constructs an empty map of named arguments. Program information will appear in help message,
+   * describing the purpose of the program. usage: java EquivalentStrings [-h] string1 string2
+   *
+   * <p>Determine if two strings are equivalent.
+   *
+   * <p>positional arguments: string1 (string) the first string string2 (string) the second string
+   *
+   * <p>named arguments: -h, --help show this help message and exit
    *
    * @param usageInfo This is for usage information about the program.
    * @param programInfo This is for the program's description.
@@ -61,11 +93,168 @@ public class LineParser {
   }
 
   /**
-   * Specify an argument to come through the command line. Adds the argument to the argument map,
-   * declaring a type.
+   * Constructs an argument map based on an xml file, tag represent argument type, name, and
+   * restricted input. <?xml version="1.0"?> <arguments> <positionalArgs> <positional>
+   * <type>float</type> <description>the length of the volume</description> <name>length</name>
+   * </positional> <positional> <type>float</type> <name>width</name> <description>the width of the
+   * volume</description> </positional> <positional> <description>the height of the
+   * volume</description> <name>height</name> <type>float</type> </positional> </positionalArgs>
+   * <namedArgs> <named> <description>the type of volume</description> <shortname>t</shortname>
+   * <type>string</type> <name>type</name> <restrictions> <restriction>box</restriction>
+   * <restriction>pyramid</restriction> <restriction>ellipsoid</restriction> </restrictions>
+   * <default> <value>box</value> </default> </named> <named> <default> <value>4</value> </default>
+   * <type>integer</type> <description>the maximum number of decimal places for the
+   * volume</description> <name>precision</name> <shortname>p</shortname> </named> </namedArgs>
+   * </arguments>
    *
-   * @param name The name of the argument (what its called).
-   * @param type The data type of the argument (float, int, or string).
+   * @param filename
+   */
+  public void addArgsFromFile(String Filename) {
+    try {
+      // Building instance of root node
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      Document document = builder.parse(new InputSource(new StringReader(Filename)));
+      Element root = document.getDocumentElement();
+
+      NodeList positionals = root.getElementsByTagName("positional");
+      NodeList optionals = root.getElementsByTagName("named");
+      // Getting elements for required
+      for (int i = 0; i < positionals.getLength(); i++) {
+        Node node = positionals.item(i);
+        Element element = (Element) node;
+
+        String strType = element.getElementsByTagName("type").item(0).getTextContent();
+        String description = element.getElementsByTagName("description").item(0).getTextContent();
+        String name = element.getElementsByTagName("name").item(0).getTextContent();
+        Datatype type = Datatype.STRING;
+        if (strType.equals("float")) {
+          type = Datatype.FLOAT;
+        } else if (strType.equals("integer")) {
+          type = Datatype.INTEGER;
+        } else if (strType.equals("string")) {
+          type = Datatype.STRING;
+        } else if (strType.equals("boolean")) {
+          type = Datatype.BOOLEAN;
+        }
+        addRequiredArgument(name, type, description);
+      }
+      // Getting elements for optionals
+      for (int i = 0; i < optionals.getLength(); i++) {
+        Node node = optionals.item(i);
+        Element element = (Element) node;
+
+        String strType = element.getElementsByTagName("type").item(0).getTextContent();
+        String description = element.getElementsByTagName("description").item(0).getTextContent();
+        String name = element.getElementsByTagName("name").item(0).getTextContent();
+
+        String shortName = element.getElementsByTagName("shortname").item(0).getTextContent();
+
+        String defaultVal = element.getElementsByTagName("default").item(0).getTextContent().trim();
+        String[] restrictionsArr = new String[0];
+
+        NodeList restrictionsNode = element.getElementsByTagName("restriction");
+        List<String> restrictions = new ArrayList<String>();
+
+        if (restrictionsNode.getLength() > 0) {
+          for (int j = 0; j < restrictionsNode.getLength(); j++) {
+            String individualRestriction = restrictionsNode.item(j).getTextContent();
+            restrictions.add(individualRestriction);
+          }
+          restrictionsArr = new String[restrictions.size()];
+          restrictionsArr = restrictions.toArray(restrictionsArr);
+        }
+
+        Datatype type = Datatype.STRING;
+        if (strType.equals("float")) {
+          type = Datatype.FLOAT;
+        } else if (strType.equals("integer")) {
+          type = Datatype.INTEGER;
+        } else if (strType.equals("string")) {
+          type = Datatype.STRING;
+        } else if (strType.equals("boolean")) {
+          type = Datatype.BOOLEAN;
+        }
+        if (restrictionsArr.length > 0) {
+          addOptionalArgument(name, type, defaultVal, description, shortName, restrictionsArr);
+        } else {
+          addOptionalArgument(name, type, defaultVal, description, shortName);
+        }
+      }
+    } catch (Exception e) {
+      System.out.println(e);
+    }
+  }
+
+  /**
+   * This program constructs an xml file of the given filename using the map in this instance of
+   * LineParser. The xml file will be constructed in a similar format to the xml file given above.
+   *
+   * @param filename Name of xml file to be constructed.
+   */
+  public void createXmlFile(String filename) throws IOException {
+    new File(filename + ".xml");
+    FileWriter myWriter = new FileWriter(filename + ".xml");
+    myWriter.write("<?xml version=\"1.0\"?>\n");
+    myWriter.write("<arguments>\n");
+
+    myWriter.write("<positionalArgs>\n");
+    for (int i = 0; i < argumentNameByPosition.size(); i++) {
+      myWriter.write("<positional>\n");
+      myWriter.write("<name>" + argumentNameByPosition.get(i) + "</name>\n");
+
+      myWriter.write(getEntry(argumentNameByPosition.get(i)).toString());
+
+      myWriter.write("</positional>\n");
+    }
+    myWriter.write("</positionalArgs>\n");
+
+    myWriter.write("<namedArgs>\n");
+    for (int i = 0; i < optionalArgument.size(); i++) {
+      myWriter.write("<named>\n");
+      myWriter.write("<name>" + optionalArgument.get(i) + "</name>\n");
+      myWriter.write(getEntry(optionalArgument.get(i)).toString());
+
+      myWriter.write("</named>\n");
+    }
+    myWriter.write("</namedArgs>\n");
+
+    myWriter.write("</arguments>");
+    myWriter.close();
+  }
+
+  /**
+   * A private method for getting an argument object with the given key. Cannot be called before
+   * parse() or getArgsFromFile() is called.
+   *
+   * @param key The name of the argument.
+   * @return An argument object.
+   */
+  private Argument getEntry(String key) {
+    Argument arg = new Argument();
+    for (Map.Entry<String, Argument> entry : arguments.entrySet()) {
+      if (entry.getKey().equals(key)) {
+        arg = entry.getValue();
+        break;
+      }
+    }
+    return arg;
+  }
+
+  /**
+   * Specify an argument to come through the command line. Adds the argument to the argument map,
+   * declaring a type. A required argument must appear in the command line in the position it was
+   * given. For example, if the user has created a new instance of lineparser called parse: If the
+   * user passes in parser.addRequiredArgument(height, Datatype.INTEGER);
+   * parser.addRequiredArgument(wight, Datatype.INTEGER); After the using calls
+   * parser.parse(commandline), A command line with the values ["1","2"] will set the value of
+   * height to 1 and width to 2. These values can be retreived through the method getArgument.
+   * parser.getArgument("height") will return 1. A command line with the values ["1"] will return an
+   * error.
+   *
+   * @param name The name of the argument (what its called, a moniker for an entry in the command
+   *     line).
+   * @param type The data type of the argument (float, int, string, or boolean).
    */
   public void addRequiredArgument(String name, Datatype type) {
     arguments.put(name, new Argument(type));
@@ -74,7 +263,18 @@ public class LineParser {
 
   /**
    * Specify an argument to come through the command line. Adds the argument to the argument map,
-   * declaring a type.
+   * declaring a type. /** Specify an argument to come through the command line. Adds the argument
+   * to the argument map, declaring a type. A required argument must appear in the command line in
+   * the position it was given. For example, if the user has created a new instance of lineparser
+   * called parse: If the user passes in parser.addRequiredArgument(height, Datatype.INTEGER);
+   * parser.addRequiredArgument(wight, Datatype.INTEGER); After the using calls
+   * parser.parse(commandline), A command line with the values ["1","2"] will set the value of
+   * height to 1 and width to 2. These values can be retreived through the method getArgument.
+   * parser.getArgument("height") will return 1. A command line with the values ["1"] will return an
+   * error.
+   *
+   * <p>This constructor adds additional help information to the argument, so that the argument is
+   * displayed in the help message.
    *
    * @param name The name of the argument (what its called).
    * @param type The data type of the argument (float, int, or string).
@@ -87,11 +287,24 @@ public class LineParser {
 
   /**
    * Specify an argument to come through the command line. Adds the argument to the argument map,
-   * declaring a type.
+   * declaring a type. A required argument must appear in the command line in the position it was
+   * given. For example, if the user has created a new instance of lineparser called parse: If the
+   * user passes in parser.addRequiredArgument(height, Datatype.INTEGER);
+   * parser.addRequiredArgument(weight, Datatype.INTEGER); After the using calls
+   * parser.parse(commandline), A command line with the values ["1","2"] will set the value of
+   * height to 1 and width to 2. These values can be retreived through the method getArgument.
+   * parser.getArgument("height") will return 1. A command line with the values ["1"] will return an
+   * error.
+   *
+   * <p>This constructor allows additional discreete values to be included. If a value is not a
+   * member of discreete values, an error is thrown. A specification of
+   * parser.addRequiredArgument("height", Datatype.INTEGER, "", new String[]{"1","2"}) will throw an
+   * error if height is not parsed to either 1 or 2.
    *
    * @param name The name of the argument (what its called).
    * @param type The data type of the argument (float, int, or string).
    * @param help Any additional descriptive help information about the argument.
+   * @param discreteValues String array of allowed values.
    */
   public void addRequiredArgument(
       String name, Datatype type, String help, String[] discreteValues) {
@@ -103,7 +316,15 @@ public class LineParser {
 
   /**
    * Request an argument that will be optional in the command line. Since no default has been added
-   * values will be set to default.
+   * values will be set to default. Optional arguments may or may not appear on the command line, an
+   * error will not be thrown. There are a few types of optional arguments: long form "-type",
+   * shortform "-t", and combined shortform "-tsm". Combined short forms act as flag, they are set
+   * as booleans and if they appear in the command line are set to value "true". Boolean do not take
+   * a secondary command line value. Their appearance on the command line sets them to true.
+   * Otherwise the next positional argument on the command line is taken as a value.
+   *
+   * <p>To add an argument with this contructor, an example would be:
+   * parser.addOptionalArgument("shape", Datatype.String);
    *
    * @param name The name of the argument (what its called).
    * @param type The data type of the argument (float, int, or string).
@@ -123,7 +344,17 @@ public class LineParser {
   }
 
   /**
-   * Request an argument that will be optional in the command line.
+   * Request an argument that will be optional in the command line. Since no default has been added
+   * values will be set to default. Optional arguments may or may not appear on the command line, an
+   * error will not be thrown. There are a few types of optional arguments: long form "-type",
+   * shortform "-t", and combined shortform "-tsm". Combined short forms act as flag, they are set
+   * as booleans and if they appear in the command line are set to value "true". Boolean do not take
+   * a secondary command line value. Their appearance on the command line sets them to true.
+   * Otherwise the next positional argument on the command line is taken as a value. A default value
+   * will set a default value on the optional argument in case it is not passed in.
+   *
+   * <p>To add an argument with this contructor, an example would be:
+   * parser.addOptionalArgument("shape", Datatype.String, "rectangle");
    *
    * @param name The name of the argument (what its called).
    * @param type The data type of the argument (float, int, or string).
@@ -136,7 +367,19 @@ public class LineParser {
   }
 
   /**
-   * Request an argument that will be optional in the command line.
+   * Request an argument that will be optional in the command line. Since no default has been added
+   * values will be set to default. Optional arguments may or may not appear on the command line, an
+   * error will not be thrown. There are a few types of optional arguments: long form "-type",
+   * shortform "-t", and combined shortform "-tsm". Combined short forms act as flag, they are set
+   * as booleans and if they appear in the command line are set to value "true". Boolean do not take
+   * a secondary command line value. Their appearance on the command line sets them to true.
+   * Otherwise the next positional argument on the command line is taken as a value. A default value
+   * will set a default value on the optional argument in case it is not passed in. A help value
+   * will specify help information for an optional value so it appears on the help/usage message.
+   *
+   * <p>To add an argument with this contructor, an example would be:
+   * parser.addOptionalArgument("shape", Datatype.String, "rectangle", "The desired shape of the
+   * polygon.");
    *
    * @param name The name of the argument (what its called).
    * @param type The data type of the argument (float, int, or string).
@@ -150,7 +393,19 @@ public class LineParser {
   }
 
   /**
-   * Request an argument that will be optional in the command line.
+   * Request an argument that will be optional in the command line. Since no default has been added
+   * values will be set to default. Optional arguments may or may not appear on the command line, an
+   * error will not be thrown. There are a few types of optional arguments: long form "-type",
+   * shortform "-t", and combined shortform "-tsm". Combined short forms act as flag, they are set
+   * as booleans and if they appear in the command line are set to value "true". Boolean do not take
+   * a secondary command line value. Their appearance on the command line sets them to true.
+   * Otherwise the next positional argument on the command line is taken as a value. A default value
+   * will set a default value on the optional argument in case it is not passed in. A help value
+   * will specify help information for an optional value so it appears on the help/usage message.
+   *
+   * <p>To add an argument with this contructor, an example would be:
+   * parser.addOptionalArgument("triangle", Datatype.BOOLEAN, "false", "The desired shape of the
+   * polygon.", "-t");
    *
    * @param name The name of the argument (what its called).
    * @param type The data type of the argument (float, int, or string).
@@ -167,7 +422,20 @@ public class LineParser {
   }
 
   /**
-   * Request an argument that will be optional in the command line.
+   * Request an argument that will be optional in the command line. Since no default has been added
+   * values will be set to default. Optional arguments may or may not appear on the command line, an
+   * error will not be thrown. There are a few types of optional arguments: long form "-type",
+   * shortform "-t", and combined shortform "-tsm". Combined short forms act as flag, they are set
+   * as booleans and if they appear in the command line are set to value "true". Boolean do not take
+   * a secondary command line value. Their appearance on the command line sets them to true.
+   * Otherwise the next positional argument on the command line is taken as a value. A default value
+   * will set a default value on the optional argument in case it is not passed in. A help value
+   * will specify help information for an optional value so it appears on the help/usage message.
+   * Discrete values can also be specified for optiional arguments.
+   *
+   * <p>To add an argument with this contructor, an example would be:
+   * parser.addOptionalArgument("shape", Datatype.String, "rectangle", "The desired shape of the
+   * polygon.","-s", new String[]{"rectangle", "pyramid", "triangle"});
    *
    * @param name The name of the argument (what its called).
    * @param type The data type of the argument (float, int, or string).
@@ -192,7 +460,7 @@ public class LineParser {
   }
 
   /**
-   * Displays a representation of the map at current.
+   * Displays a representation of the map at current in nested array format.
    *
    * @return An array representation of elements in the map.
    */
@@ -210,7 +478,8 @@ public class LineParser {
   }
 
   /**
-   * Parses the desired argument to its type and returns the value as that type.
+   * Parses the desired argument to its type and returns the value as that type. This method can
+   * only be called after the parse() method.
    *
    * @param identifier identifer The key for the desired argument.
    * @return The argument parsed to its type.
@@ -233,13 +502,13 @@ public class LineParser {
       try {
         Float.parseFloat(value);
       } catch (NumberFormatException e) {
-        throw new IllegalArgumentException("the value " + value + " is not of type float");
+        throw new IllegalTypeException(value, "float");
       }
     } else if (type == Datatype.INTEGER) {
       try {
         Integer.parseInt(value);
       } catch (NumberFormatException e) {
-        throw new IllegalArgumentException("the value " + value + " is not of type integer");
+        throw new IllegalTypeException(value, "integer");
       }
     }
   }
@@ -255,18 +524,15 @@ public class LineParser {
     if (arguments.get(argumentName).discreteValues.length > 0) {
 
       if (!Arrays.asList(arguments.get(argumentName).discreteValues).contains(values)) {
-        throw new IllegalArgumentException(
-            argumentName
-                + " value "
-                + values
-                + " is not a member of "
-                + Arrays.toString(arguments.get(argumentName).discreteValues));
+        throw new DiscreteValueException(
+            argumentName, values, arguments.get(argumentName).discreteValues);
       }
     }
   }
 
   /**
-   * Checks discrete values are of proper type.
+   * Checks discrete values are of proper type. If they are not of the correct type for the
+   * argument, throw an exception.
    *
    * @param type Type of data of argument.
    * @param values Possible values for the argument.
@@ -277,13 +543,13 @@ public class LineParser {
         try {
           Float.parseFloat(value);
         } catch (NumberFormatException e) {
-          throw new IllegalArgumentException("the value " + value + " is not of type float");
+          throw new IllegalTypeException(value, "float");
         }
       } else if (type == Datatype.INTEGER) {
         try {
           Integer.parseInt(value);
         } catch (NumberFormatException e) {
-          throw new IllegalArgumentException("the value " + value + " is not of type integer");
+          throw new IllegalTypeException(value, "integer");
         }
       }
     }
@@ -332,53 +598,53 @@ public class LineParser {
    * Parses the given command line arguments and maps them to a value. Returns exceptions under the
    * following cases: -If there are more non-named arguments than identifiers. -If there are less
    * non named arguments than identifiers. -If a given argument value cannot be converted to its
-   * specified type. -If a named argument is declared but not followed by a value.
+   * specified type. -If a named argument is declared but not followed by a value. Shortform
+   * collections are exempt from this. After parse has been completed, getArgument can be called on
+   * any values that appeared in the command line. If -h or --help appears in the command line,
+   * parse halts execution and prints the help/usage message.
    *
    * @param args String array representation of command line values.
    */
   public void parse(String[] args) {
     if (detectHelp(args)) {
-      System.out.println(constructHelpMessage());
+      throw new HelpException(constructHelpMessage());
     } else {
       Queue<String> q = new LinkedList<>(Arrays.asList(args));
 
       int position = 0;
       // While this queue has things in it.
-      while (q.isEmpty() == false) {
+      while (!q.isEmpty()) {
         String current = q.remove();
-
+        // Is this an optional, whether long form, short form, or combined short form.
         if (current.startsWith("-")
             && (arguments.containsKey(current.substring(2))
                 || !getLongForm(current.substring(1)).equals("")
                 || checkCombinedShortForms(current.substring(1)))) {
+          String value = q.peek();
           // If it is named long form
           if (current.substring(1, 2).equals("-")) {
-
-            String value = q.peek();
             Datatype type = arguments.get(current.substring(2)).type;
             // If it is a boolean argument
             if (arguments.get(current.substring(2)).type == Datatype.BOOLEAN) {
               arguments.get(current.substring(2)).value = "true";
             } else {
-              // Remove from queue, get type.
-
+              // Check that the argument has a value,
               if (q.isEmpty()) {
-                throw new IllegalArgumentException("no value for " + current.substring(2));
+                throw new NoValueForOptionalException(current.substring(2));
               }
               checkArgumentsForTypeEquivalence(type, value);
               if ((q.peek().startsWith("--"))) {
-                throw new IllegalArgumentException("no value for " + current.substring(2));
+                throw new NoValueForOptionalException(current.substring(2));
               }
               checkValueIsDiscrete(current.substring(2), value);
+              // Remove from queue, set to value in the map.
               arguments.get(current.substring(2)).setValue(value);
               q.remove();
             }
             // If optional is named shortform
           } else {
-
-            String value = q.peek();
             String longName = getLongForm(current.substring(1));
-
+            // If this is a lone shortname flag or a boolean
             if (current.substring(1).length() > 1
                 || arguments.get(longName).type == Datatype.BOOLEAN) {
               String[] flags = current.substring(1).split("");
@@ -392,12 +658,12 @@ public class LineParser {
               // Remove from queue, get type.
               Datatype type = arguments.get(longName).type;
               if (q.isEmpty()) {
-                throw new IllegalArgumentException("no value for " + longName);
+                throw new NoValueForOptionalException(longName);
               }
               checkArgumentsForTypeEquivalence(type, value);
               if (((q.peek().startsWith("--") || q.peek().startsWith("-")))
                   && checkCombinedShortForms(q.peek())) {
-                throw new IllegalArgumentException("no value for " + longName);
+                throw new NoValueForOptionalException(longName);
               }
               checkValueIsDiscrete(longName, value);
               arguments.get(longName).setValue(value);
@@ -408,7 +674,7 @@ public class LineParser {
         } else {
           if (position > argumentNameByPosition.size() - 1) {
             String excess = current;
-            throw new IllegalArgumentException("the value " + excess + " matches no argument");
+            throw new ExcessiveValuesException(excess);
           }
           Datatype type = arguments.get(argumentNameByPosition.get(position)).type;
           String value = current;
@@ -419,8 +685,8 @@ public class LineParser {
         }
       }
       if (argumentNameByPosition.size() - 1 >= position) {
-        throw new IllegalArgumentException(
-            "the argument " + argumentNameByPosition.get(position) + " is required");
+        // argumentNameByPosition.get(position)
+        throw new InsufficientValuesException(argumentNameByPosition.get(position));
       }
     }
   }
@@ -603,7 +869,7 @@ public class LineParser {
    * @param arguments Command line arguments in string form.
    * @return Boolean as to whether or not --help or -h is detected.
    */
-  public boolean detectHelp(String[] arguments) {
+  private boolean detectHelp(String[] arguments) {
     for (int i = 0; i < arguments.length; i++) {
       if (arguments[i].equals("-h") || arguments[i].equals("--help")) {
         return true;
