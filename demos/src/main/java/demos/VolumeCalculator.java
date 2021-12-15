@@ -12,24 +12,20 @@ public class VolumeCalculator {
   int precision = 4;
 
   public VolumeCalculator(Float length, Float width, Float heigth) {
-
     this.length = (double) length;
     this.width = (double) width;
     this.heigth = (double) heigth;
   }
 
   public void setShape(String shape) {
-
     this.shape = shape;
   }
 
   public String getShape() {
-
     return shape;
   }
 
   public void setPrecision(int precision) {
-
     this.precision = precision;
   }
 
@@ -50,7 +46,7 @@ public class VolumeCalculator {
   }
 
   public double calcVolume() {
-
+    volume = 0.0000000;
     if (shape.contentEquals("box")) {
       volume = length * width * heigth;
     } else if (shape.contentEquals("pyramid")) {
@@ -70,7 +66,6 @@ public class VolumeCalculator {
     for (int i = 1; i < args.length; i++) {
       Argument[i - 1] = args[i];
     }
-
     try {
       parser.addArgsFromString(xml);
       parser.parse(Argument);

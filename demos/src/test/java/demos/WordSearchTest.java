@@ -116,9 +116,28 @@ public class WordSearchTest {
   }
 
   @Test
+  public void testWordSearchLastCol() {
+    WordSearch test = new WordSearch();
+    test.setHeight(7);
+    test.setWidth(6);
+    test.setBoard("softwaeskqermilvcqputeromocertpuiopprogram");
+    test.setWord("software");
+    String wordResult = test.findWord();
+    ;
+    assertEquals("software", wordResult);
+  }
+
+  @Test
   public void testMain() throws IOException {
     WordSearch t = new WordSearch();
     String[] args = new String[] {"soptwerhomnioroeroer", "senior", "--height", "4"};
+    t.main(args);
+  }
+
+  @Test
+  public void testMainHelp() throws IOException {
+    WordSearch t = new WordSearch();
+    String[] args = new String[] {"soptwerhomnioroeroer", "--help", "senior", "--height", "4"};
     t.main(args);
   }
 

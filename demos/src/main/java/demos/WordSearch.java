@@ -101,10 +101,6 @@ public class WordSearch {
     } else if (z < height - 1 && board[z + 1][y] == word.charAt(index)) {
       String c2 = c1 + " " + setCoordinate(board[z + 1][y], z + 1, y);
       findNextLetter(index + 1, z + 1, y, w1 + board[z + 1][y], c2);
-    } else if (z < height - 1 && board[z + 1][y] == word.charAt(index)) {
-      String c2 = c1 + " " + setCoordinate(board[z + 1][y], z + 1, y);
-      findNextLetter(index + 1, z + 1, y, w1 + board[z + 1][y], c2);
-      return true;
     }
     return false;
   }
@@ -130,12 +126,7 @@ public class WordSearch {
       boolean right = lookRight(index, z, y, w1, c1);
       boolean left = lookLeft(index, z, y, w1, c1);
       if (!up && !down && !right && !left) {
-        if (col == col - 1) {
-          col = 0;
-          findFirstLetter(row + 1, col);
-        } else {
-          findFirstLetter(row, col + 1);
-        }
+        findFirstLetter(row, col + 1);
       }
     }
   }

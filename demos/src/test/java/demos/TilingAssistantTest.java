@@ -88,6 +88,14 @@ public class TilingAssistantTest {
   }
 
   @Test
+  public void testMainHelpException() throws IOException {
+    TilingAssistant tile = new TilingAssistant();
+    String[] args =
+        new String[] {"--help", "28.5", "--groutgap", "0.25", "22", "--tilesize", "4.75"};
+    tile.main(args);
+  }
+
+  @Test
   public void testMainNegative() throws IOException {
     TilingAssistant tile = new TilingAssistant();
     String[] args = new String[] {"-0.1", "10"};
