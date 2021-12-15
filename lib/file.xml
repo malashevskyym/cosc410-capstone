@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<arguments>
+<positionalArgs>
+<positional>
+<name>length</name>
+<type>float</type>
+<description>the length of the volume</description>
+</positional>
+<positional>
+<name>width</name>
+<type>float</type>
+<description>the width of the volume</description>
+</positional>
+<positional>
+<name>height</name>
+<type>float</type>
+<description>the height of the volume</description>
+</positional>
+</positionalArgs>
+<namedArgs>
+<named>
+<name>type</name>
+<type>string</type>
+<default>
+<value>box</value>
+</default>
+<description>the type of volume</description>
+<shortname>t</shortname>
+<restrictions>
+<restriction>box</restriction>
+<restriction>pyramid</restriction>
+<restriction>ellipsoid</restriction>
+</restrictions>
+</named>
+<named>
+<name>precision</name>
+<type>float</type>
+<default>
+<value>4.0</value>
+</default>
+<description>the maximum number of decimal places for the volume</description>
+<shortname>p</shortname>
+</named>
+</namedArgs>
+</arguments>

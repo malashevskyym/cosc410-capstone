@@ -95,27 +95,16 @@ public class LineParser {
 
   /**
    * Constructs an argument map based on an xml file, tag represent argument type, name, and
-   * restricted input. <?xml version="1.0"?> <arguments> <positionalArgs> <positional>
-   * <type>float</type> <description>the length of the volume</description> <name>length</name>
-   * </positional> <positional> <type>float</type> <name>width</name> <description>the width of the
-   * volume</description> </positional> <positional> <description>the height of the
-   * volume</description> <name>height</name> <type>float</type> </positional> </positionalArgs>
-   * <namedArgs> <named> <description>the type of volume</description> <shortname>t</shortname>
-   * <type>string</type> <name>type</name> <restrictions> <restriction>box</restriction>
-   * <restriction>pyramid</restriction> <restriction>ellipsoid</restriction> </restrictions>
-   * <default> <value>box</value> </default> </named> <named> <default> <value>4</value> </default>
-   * <type>integer</type> <description>the maximum number of decimal places for the
-   * volume</description> <name>precision</name> <shortname>p</shortname> </named> </namedArgs>
-   * </arguments>
+   * restricted input. For an example, see file.xml.
    *
-   * @param filename
+   * @param xml Xml string that would appear in the file.
    */
-  public void addArgsFromString(String Filename) {
+  public void addArgsFromString(String xml) {
     try {
       // Building instance of root node
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       DocumentBuilder builder = factory.newDocumentBuilder();
-      Document document = builder.parse(new InputSource(new StringReader(Filename)));
+      Document document = builder.parse(new InputSource(new StringReader(xml)));
       Element root = document.getDocumentElement();
 
       NodeList positionals = root.getElementsByTagName("positional");
@@ -516,6 +505,7 @@ public class LineParser {
    * only be called after the parse() method.
    *
    * @param identifier identifer The key for the desired argument.
+   * @param <T> Generic type.
    * @return The argument parsed to its type.
    */
   @SuppressWarnings("unchecked")

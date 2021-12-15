@@ -25,9 +25,9 @@ public class LineParserTest {
     Test.addRequiredArgument("Y", LineParser.Datatype.INTEGER, "Width");
     Test.addRequiredArgument("Z", LineParser.Datatype.INTEGER, "Height");
 
-    String[] test1 = new String[] { "2", "4", "7" };
+    String[] test1 = new String[] {"2", "4", "7"};
     Test.parse(test1);
-    assertTrue(Arrays.equals(new String[] { "X", "INT", "2", "Length" }, Test.getArg()[0]));
+    assertTrue(Arrays.equals(new String[] {"X", "INT", "2", "Length"}, Test.getArg()[0]));
   }
 
   @Test
@@ -39,9 +39,9 @@ public class LineParserTest {
     Test.addRequiredArgument("Z", LineParser.Datatype.INTEGER, "Height");
     Test.addOptionalArgument("type", LineParser.Datatype.STRING, "Box", "Shape");
 
-    String[] test1 = new String[] { "2", "4", "7", "--type", "box" };
+    String[] test1 = new String[] {"2", "4", "7", "--type", "box"};
     Test.parse(test1);
-    assertTrue(Arrays.equals(new String[] { "type", "STRING", "box", "Shape" }, Test.getArg()[3]));
+    assertTrue(Arrays.equals(new String[] {"type", "STRING", "box", "Shape"}, Test.getArg()[3]));
   }
 
   @Test
@@ -53,9 +53,9 @@ public class LineParserTest {
     Test.addRequiredArgument("Z", LineParser.Datatype.FLOAT, "Height");
     Test.addOptionalArgument("type", LineParser.Datatype.STRING, "Shape");
 
-    String[] test1 = new String[] { "2", "4", "7", "--type", "box" };
+    String[] test1 = new String[] {"2", "4", "7", "--type", "box"};
     Test.parse(test1);
-    assertTrue(Arrays.equals(new String[] { "Z", "FLOAT", "7", "Height" }, Test.getArg()[2]));
+    assertTrue(Arrays.equals(new String[] {"Z", "FLOAT", "7", "Height"}, Test.getArg()[2]));
   }
 
   @Test
@@ -67,9 +67,9 @@ public class LineParserTest {
     Test.addRequiredArgument("Z", LineParser.Datatype.INTEGER, "Height");
     Test.addOptionalArgument("type", LineParser.Datatype.STRING, "Box");
 
-    String[] test1 = new String[] { "2", "4", "7", "--type", "box" };
+    String[] test1 = new String[] {"2", "4", "7", "--type", "box"};
     Test.parse(test1);
-    assertTrue(Arrays.equals(new String[] { "type", "STRING", "box", "" }, Test.getArg()[3]));
+    assertTrue(Arrays.equals(new String[] {"type", "STRING", "box", ""}, Test.getArg()[3]));
   }
 
   @Test
@@ -82,9 +82,9 @@ public class LineParserTest {
     Test.addOptionalArgument("type", LineParser.Datatype.STRING, "Box");
     Test.addOptionalArgument("area", LineParser.Datatype.INTEGER, "15");
 
-    String[] test1 = new String[] { "2", "4", "7", "--type", "box", "--area", "10" };
+    String[] test1 = new String[] {"2", "4", "7", "--type", "box", "--area", "10"};
     Test.parse(test1);
-    assertTrue(Arrays.equals(new String[] { "area", "INT", "10", "" }, Test.getArg()[0]));
+    assertTrue(Arrays.equals(new String[] {"area", "INT", "10", ""}, Test.getArg()[0]));
   }
 
   @Test
@@ -96,7 +96,7 @@ public class LineParserTest {
     Test.addRequiredArgument("Z", LineParser.Datatype.INTEGER, "Height");
     Test.addOptionalArgument("type", LineParser.Datatype.STRING, "Box");
 
-    String[] test1 = new String[] { "2", "4", "7", "--type", "box", "--help" };
+    String[] test1 = new String[] {"2", "4", "7", "--type", "box", "--help"};
     Assertions.assertThrows(
         HelpException.class,
         () -> {
@@ -114,7 +114,7 @@ public class LineParserTest {
     Test.addOptionalArgument("type", LineParser.Datatype.INTEGER, "Box");
     Test.addOptionalArgument("box", LineParser.Datatype.FLOAT, "Box");
 
-    String[] test1 = new String[] { "2", "4", "7", "--type", "box", "--help" };
+    String[] test1 = new String[] {"2", "4", "7", "--type", "box", "--help"};
 
     Assertions.assertThrows(
         HelpException.class,
@@ -132,7 +132,7 @@ public class LineParserTest {
     Test.addRequiredArgument("Z", LineParser.Datatype.INTEGER, "Height");
     Test.addOptionalArgument("type", LineParser.Datatype.STRING, "Box");
 
-    String[] test1 = new String[] { "2", "4", "7", "--type", "box", "-h" };
+    String[] test1 = new String[] {"2", "4", "7", "--type", "box", "-h"};
     Assertions.assertThrows(
         HelpException.class,
         () -> {
@@ -148,7 +148,7 @@ public class LineParserTest {
     Test.addRequiredArgument("Z", LineParser.Datatype.INTEGER, "Height");
     Test.addOptionalArgument("type", LineParser.Datatype.STRING, "Box");
 
-    String[] test1 = new String[] { "2", "4", "7", "6", "--type", "box" };
+    String[] test1 = new String[] {"2", "4", "7", "6", "--type", "box"};
     Assertions.assertThrows(
         ExcessiveValuesException.class,
         () -> {
@@ -164,7 +164,7 @@ public class LineParserTest {
     Test.addRequiredArgument("Z", LineParser.Datatype.INTEGER, "Height");
     Test.addOptionalArgument("type", LineParser.Datatype.STRING, "Box");
 
-    String[] test1 = new String[] { "2", "4", "--type", "box" };
+    String[] test1 = new String[] {"2", "4", "--type", "box"};
     Assertions.assertThrows(
         InsufficientValuesException.class,
         () -> {
@@ -180,7 +180,7 @@ public class LineParserTest {
     Test.addRequiredArgument("Z", LineParser.Datatype.INTEGER, "Height");
     Test.addOptionalArgument("type", LineParser.Datatype.STRING, "Box");
 
-    String[] test1 = new String[] { "2", "4", "--type", "--box" };
+    String[] test1 = new String[] {"2", "4", "--type", "--box"};
     Assertions.assertThrows(
         NoValueForOptionalException.class,
         () -> {
@@ -196,7 +196,7 @@ public class LineParserTest {
     Test.addRequiredArgument("Z", LineParser.Datatype.INTEGER, "Height");
     Test.addOptionalArgument("type", LineParser.Datatype.STRING, "Box");
 
-    String[] test1 = new String[] { "2", "4", "6", "--type" };
+    String[] test1 = new String[] {"2", "4", "6", "--type"};
     Assertions.assertThrows(
         NoValueForOptionalException.class,
         () -> {
@@ -212,7 +212,7 @@ public class LineParserTest {
     Test.addRequiredArgument("Z", LineParser.Datatype.INTEGER, "Height");
     Test.addOptionalArgument("type", LineParser.Datatype.STRING, "Box");
 
-    String[] test1 = new String[] { "2", "z", "--type", "box" };
+    String[] test1 = new String[] {"2", "z", "--type", "box"};
     Assertions.assertThrows(
         IllegalTypeException.class,
         () -> {
@@ -228,7 +228,7 @@ public class LineParserTest {
     Test.addRequiredArgument("Z", LineParser.Datatype.FLOAT, "Height");
     Test.addOptionalArgument("type", LineParser.Datatype.STRING, "Box");
 
-    String[] test1 = new String[] { "2", "z", "--type", "box" };
+    String[] test1 = new String[] {"2", "z", "--type", "box"};
     Assertions.assertThrows(
         IllegalTypeException.class,
         () -> {
@@ -244,7 +244,7 @@ public class LineParserTest {
     Test.addRequiredArgument("Z", LineParser.Datatype.FLOAT, "Height");
     Test.addOptionalArgument("type", LineParser.Datatype.FLOAT, "Box");
 
-    String[] test1 = new String[] { "2", "z", "--type", "box" };
+    String[] test1 = new String[] {"2", "z", "--type", "box"};
     Assertions.assertThrows(
         IllegalTypeException.class,
         () -> {
@@ -260,7 +260,7 @@ public class LineParserTest {
     Test.addRequiredArgument("Z", LineParser.Datatype.FLOAT, "Height");
     Test.addOptionalArgument("type", LineParser.Datatype.INTEGER, "Box");
 
-    String[] test1 = new String[] { "2", "z", "--type", "box" };
+    String[] test1 = new String[] {"2", "z", "--type", "box"};
     Assertions.assertThrows(
         IllegalTypeException.class,
         () -> {
@@ -276,7 +276,7 @@ public class LineParserTest {
     Test.addRequiredArgument("Z", LineParser.Datatype.FLOAT, "Height");
     Test.addOptionalArgument("type", LineParser.Datatype.FLOAT, "Box");
 
-    String[] test1 = new String[] { "2", "z", "--type", "box" };
+    String[] test1 = new String[] {"2", "z", "--type", "box"};
     Assertions.assertThrows(
         IllegalTypeException.class,
         () -> {
@@ -292,7 +292,7 @@ public class LineParserTest {
     Test.addRequiredArgument("Z", LineParser.Datatype.FLOAT, "Height");
     Test.addOptionalArgument("type", LineParser.Datatype.INTEGER, "Box");
 
-    String[] test1 = new String[] { "2", "z", "--type", "--box" };
+    String[] test1 = new String[] {"2", "z", "--type", "--box"};
     Assertions.assertThrows(
         IllegalTypeException.class,
         () -> {
@@ -308,7 +308,7 @@ public class LineParserTest {
     Test.addRequiredArgument("Z", LineParser.Datatype.FLOAT, "Height");
     Test.addOptionalArgument("type", LineParser.Datatype.INTEGER, "Box");
 
-    String[] test1 = new String[] { "2", "z", "--type", "-box" };
+    String[] test1 = new String[] {"2", "z", "--type", "-box"};
     Assertions.assertThrows(
         IllegalTypeException.class,
         () -> {
@@ -324,7 +324,7 @@ public class LineParserTest {
     Test.addRequiredArgument("Z", LineParser.Datatype.FLOAT, "Height");
     Test.addOptionalArgument("type", LineParser.Datatype.FLOAT, "Box");
 
-    String[] test1 = new String[] { "2", "3", "4.0", "--type", "box" };
+    String[] test1 = new String[] {"2", "3", "4.0", "--type", "box"};
     Assertions.assertThrows(
         IllegalTypeException.class,
         () -> {
@@ -337,7 +337,7 @@ public class LineParserTest {
     LineParser Test = new LineParser();
     Test.addRequiredArgument("X", LineParser.Datatype.STRING, "String to String");
 
-    String[] test1 = new String[] { "Hello" };
+    String[] test1 = new String[] {"Hello"};
     Test.parse(test1);
     assertEquals("Hello", Test.getArgument("X"));
   }
@@ -347,7 +347,7 @@ public class LineParserTest {
     LineParser Test = new LineParser();
     Test.addRequiredArgument("X", LineParser.Datatype.INTEGER, "String to Integer");
 
-    String[] test1 = new String[] { "11" };
+    String[] test1 = new String[] {"11"};
     Test.parse(test1);
     assertEquals((Integer) 11, Test.getArgument("X"));
   }
@@ -357,7 +357,7 @@ public class LineParserTest {
     LineParser Test = new LineParser();
     Test.addRequiredArgument("X", LineParser.Datatype.FLOAT, "String to Float");
 
-    String[] test1 = new String[] { "3.15" };
+    String[] test1 = new String[] {"3.15"};
     Test.parse(test1);
     assertEquals((Float) 3.15f, Test.getArgument("X"));
   }
@@ -368,7 +368,7 @@ public class LineParserTest {
     Test.addRequiredArgument("X", LineParser.Datatype.FLOAT, "String to Float");
     Test.addOptionalArgument("type", Datatype.STRING, "box", "displays Type", "t");
 
-    String[] test1 = new String[] { "2.0", "-t", "triangle" };
+    String[] test1 = new String[] {"2.0", "-t", "triangle"};
     Test.parse(test1);
     assertEquals("triangle", Test.getArgument("type"));
   }
@@ -379,7 +379,7 @@ public class LineParserTest {
     Test.addRequiredArgument("X", LineParser.Datatype.FLOAT, "String to Float");
     Test.addOptionalArgument("type", Datatype.INTEGER, "5", "displays Type", "t");
 
-    String[] test1 = new String[] { "2.0", "-t", "4" };
+    String[] test1 = new String[] {"2.0", "-t", "4"};
     Test.parse(test1);
     int value = Test.getArgument("type");
     assertEquals(4, value);
@@ -391,7 +391,7 @@ public class LineParserTest {
     Test.addRequiredArgument("X", LineParser.Datatype.FLOAT, "String to Float");
     Test.addOptionalArgument("type", Datatype.FLOAT, "5.0", "displays Type", "t");
 
-    String[] test1 = new String[] { "2.0", "-t", "4.0" };
+    String[] test1 = new String[] {"2.0", "-t", "4.0"};
     Test.parse(test1);
     Float f = (float) 4.0;
     Float value = Test.getArgument("type");
@@ -408,8 +408,8 @@ public class LineParserTest {
         "Box",
         "displays Type",
         "t",
-        new String[] { "box", "triangle", "rectangle" });
-    String[] test1 = new String[] { "2.0", "-t", "box" };
+        new String[] {"box", "triangle", "rectangle"});
+    String[] test1 = new String[] {"2.0", "-t", "box"};
     Test.parse(test1);
     assertEquals("box", Test.getArgument("type"));
   }
@@ -424,8 +424,8 @@ public class LineParserTest {
         "Box",
         "displays Type",
         "t",
-        new String[] { "box", "triangle", "rectangle" });
-    String[] test1 = new String[] { "2.0", "-t", "5" };
+        new String[] {"box", "triangle", "rectangle"});
+    String[] test1 = new String[] {"2.0", "-t", "5"};
     Assertions.assertThrows(
         DiscreteValueException.class,
         () -> {
@@ -437,9 +437,9 @@ public class LineParserTest {
   public void testDiscreteValueStringFailsRequired() {
     LineParser Test = new LineParser();
     Test.addRequiredArgument(
-        "X", LineParser.Datatype.INTEGER, "String to Float", new String[] { "1", "2", "3" });
+        "X", LineParser.Datatype.INTEGER, "String to Float", new String[] {"1", "2", "3"});
     Test.addOptionalArgument("type", Datatype.STRING);
-    String[] test1 = new String[] { "2.0", "-t", "5" };
+    String[] test1 = new String[] {"2.0", "-t", "5"};
     Assertions.assertThrows(
         IllegalTypeException.class,
         () -> {
@@ -455,9 +455,9 @@ public class LineParserTest {
         IllegalTypeException.class,
         () -> {
           Test.addRequiredArgument(
-              "X", LineParser.Datatype.INTEGER, "String to Float", new String[] { "1", "x", "3" });
+              "X", LineParser.Datatype.INTEGER, "String to Float", new String[] {"1", "x", "3"});
           Test.addOptionalArgument("type", Datatype.STRING);
-          String[] test1 = new String[] { "2.0", "-t", "5" };
+          String[] test1 = new String[] {"2.0", "-t", "5"};
           Test.parse(test1);
         });
   }
@@ -470,9 +470,9 @@ public class LineParserTest {
         IllegalTypeException.class,
         () -> {
           Test.addRequiredArgument(
-              "X", LineParser.Datatype.INTEGER, "String to Float", new String[] { "1", "x", "3" });
+              "X", LineParser.Datatype.INTEGER, "String to Float", new String[] {"1", "x", "3"});
           Test.addOptionalArgument("type", Datatype.STRING);
-          String[] test1 = new String[] { "2.0", "-t", "5" };
+          String[] test1 = new String[] {"2.0", "-t", "5"};
           Test.parse(test1);
         });
   }
@@ -483,7 +483,7 @@ public class LineParserTest {
     Test.addRequiredArgument("X", LineParser.Datatype.FLOAT, "String to Float");
     Test.addOptionalArgument("type", Datatype.BOOLEAN, "false", "displays Type", "t");
 
-    String[] test1 = new String[] { "2.0", "-t", "-h" };
+    String[] test1 = new String[] {"2.0", "-t", "-h"};
     Assertions.assertThrows(
         HelpException.class,
         () -> {
@@ -497,7 +497,7 @@ public class LineParserTest {
     Test.addRequiredArgument("X", LineParser.Datatype.FLOAT, "String to Float");
     Test.addOptionalArgument("type", Datatype.BOOLEAN, "false", "displays Type");
 
-    String[] test1 = new String[] { "2.0", "-t", "-h" };
+    String[] test1 = new String[] {"2.0", "-t", "-h"};
     Assertions.assertThrows(
         HelpException.class,
         () -> {
@@ -512,7 +512,7 @@ public class LineParserTest {
     Test.addOptionalArgument("type", Datatype.BOOLEAN, "false", "displays Type", "t");
     Test.addOptionalArgument("variety", Datatype.BOOLEAN, "false", "displays Type", "v");
 
-    String[] test1 = new String[] { "2.0", "-tv" };
+    String[] test1 = new String[] {"2.0", "-tv"};
     Test.parse(test1);
     boolean t = true;
     boolean f = Test.getArgument("type");
@@ -525,7 +525,7 @@ public class LineParserTest {
 
     Test.addOptionalArgument("type", Datatype.BOOLEAN);
 
-    String[] test1 = new String[] { "--type" };
+    String[] test1 = new String[] {"--type"};
     Test.parse(test1);
     boolean t = true;
     boolean f = Test.getArgument("type");
@@ -538,7 +538,7 @@ public class LineParserTest {
 
     Test.addOptionalArgument("type", Datatype.INTEGER);
 
-    String[] test1 = new String[] { "--type", "2" };
+    String[] test1 = new String[] {"--type", "2"};
     Test.parse(test1);
     Integer t = 2;
     Integer f = Test.getArgument("type");
@@ -551,7 +551,7 @@ public class LineParserTest {
 
     Test.addOptionalArgument("type", Datatype.FLOAT);
 
-    String[] test1 = new String[] { "--type", "2.0" };
+    String[] test1 = new String[] {"--type", "2.0"};
     Test.parse(test1);
     Float t = (float) 2.0;
     Float f = Test.getArgument("type");
